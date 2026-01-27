@@ -1,10 +1,10 @@
 package com.solapi.sdk.message.dto.request
 
-import kotlinx.serialization.Contextual
-import java.time.LocalDateTime
-import kotlinx.serialization.Serializable
 import com.solapi.sdk.message.model.CommonMessageProperty
 import com.solapi.sdk.message.model.MessageStatusType
+import kotlin.time.Instant
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class MessageListRequest(
@@ -58,13 +58,13 @@ data class MessageListRequest(
      * 조회 할 시작 날짜
      */
     @Contextual
-    var startDate: LocalDateTime? = null,
+    var startDate: Instant? = null,
 
     /**
      * 조회 할 종료 날짜
      */
     @Contextual
-    var endDate: LocalDateTime? = null,
+    var endDate: Instant? = null,
 
     /**
      * 발송 상태

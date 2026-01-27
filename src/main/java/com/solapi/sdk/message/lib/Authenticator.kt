@@ -1,10 +1,9 @@
 package com.solapi.sdk.message.lib
 
 import com.solapi.sdk.message.exception.SolapiApiKeyException
+import kotlin.time.Clock
 import org.apache.commons.codec.binary.Hex
 import java.nio.charset.StandardCharsets
-import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
@@ -25,7 +24,7 @@ internal class Authenticator(
         }
 
         val salt = UUID.randomUUID().toString().replace(Regex("-"), "")
-        val date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toString().split(Regex("\\[")).toTypedArray()[0]
+        val date = Clock.System.now().toString()
 
         val encryptionInstance = Mac.getInstance(ENCRYPTION_ALGORITHM)
         val secretKey = SecretKeySpec(apiSecretKey.toByteArray(StandardCharsets.UTF_8), ENCRYPTION_ALGORITHM)

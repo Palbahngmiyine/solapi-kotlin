@@ -1,9 +1,9 @@
 package com.solapi.sdk.message.dto.request
 
-import kotlinx.serialization.Contextual
-import java.time.LocalDateTime
-import kotlinx.serialization.Serializable
 import com.solapi.sdk.message.model.CommonMessageProperty
+import kotlin.time.Instant
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class MessageListBaseRequest(
@@ -20,8 +20,8 @@ data class MessageListBaseRequest(
     var value: String? = null,
 
     @Contextual
-    var startDate: LocalDateTime? = null,
+    var startDate: Instant? = null,
 
     @Contextual
-    var endDate: LocalDateTime? = null
+    var endDate: Instant? = null
 ) : CommonMessageProperty

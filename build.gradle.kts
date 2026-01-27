@@ -89,8 +89,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
     implementation("com.squareup.retrofit2:converter-kotlinx-serialization:3.0.0")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.14.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.14.2")
+    testImplementation(kotlin("test"))
 
     dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:2.1.0")
 }

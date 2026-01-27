@@ -1,6 +1,6 @@
 package com.solapi.sdk.message.dto.request.kakao
 
-import java.time.Instant
+import kotlin.time.Instant
 
 data class KakaoTemplateDateQuery(
     val date: Instant,
