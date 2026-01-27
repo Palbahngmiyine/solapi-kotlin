@@ -84,5 +84,10 @@ enum class MessageType {
     /**
      * 카카오 브랜드 메시지 와이드 리스트 타입
      */
-    BMS_WIDE_ITEM_LIST;
+    BMS_WIDE_ITEM_LIST,
+
+    /**
+     * 카카오 브랜드 메시지 자유형 타입
+     */
+    BMS_FREE;
 }
