@@ -38,3 +38,6 @@ secret.key
 # Generated files
 /docs/
 manual/
+
+# OMO
+.sisyphus/
