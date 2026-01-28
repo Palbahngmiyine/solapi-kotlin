@@ -157,4 +157,117 @@ class DtoSerializationTest {
         // Then
         assertEquals(preciseInstant, restored.scheduledDate)
     }
+
+    @Test
+    fun `SendRequestConfig setScheduledDateFromLocalDateTime with system default timezone`() {
+        // Given
+        val config = SendRequestConfig(appId = "test-app")
+        val localDateTime = java.time.LocalDateTime.of(2024, 6, 15, 14, 30, 0)
+        
+        // When
+        config.setScheduledDateFromLocalDateTime(localDateTime)
+        
+        // Then
+        val expectedJavaInstant = localDateTime
+            .atZone(java.time.ZoneId.systemDefault())
+            .toInstant()
+        val actualJavaInstant = java.time.Instant.parse(config.scheduledDate.toString())
+        assertEquals(expectedJavaInstant, actualJavaInstant)
+    }
+
+    @Test
+    fun `SendRequestConfig setScheduledDateFromLocalDateTime with explicit UTC timezone`() {
+        // Given
+        val config = SendRequestConfig(appId = "test-app")
+        val localDateTime = java.time.LocalDateTime.of(2024, 6, 15, 14, 30, 0)
+        
+        // When
+        config.setScheduledDateFromLocalDateTime(localDateTime, java.time.ZoneOffset.UTC)
+        
+        // Then
+        val expectedInstant = Instant.parse("2024-06-15T14:30:00Z")
+        assertEquals(expectedInstant, config.scheduledDate)
+    }
+
+    @Test
+    fun `SendRequestConfig backward compatibility - existing Instant API still works`() {
+        // Given
+        val instant = Instant.parse("2024-06-15T14:30:00Z")
+        
+        // When
+        val config = SendRequestConfig(
+            appId = "test-app",
+            scheduledDate = instant
+        )
+        
+        // Then
+        assertEquals(instant, config.scheduledDate)
+        val json = JsonSupport.json.encodeToString(config)
+        assertTrue(json.contains("\"scheduledDate\":\"2024-06-15T14:30:00Z\""))
+    }
+
+    @Test
+    fun `MessageListRequest setStartDateFromLocalDateTime works`() {
+        // Given
+        val request = MessageListRequest()
+        val localDateTime = java.time.LocalDateTime.of(2024, 1, 1, 0, 0, 0)
+        
+        // When
+        request.setStartDateFromLocalDateTime(localDateTime, java.time.ZoneOffset.UTC)
+        
+        // Then
+        assertEquals(Instant.parse("2024-01-01T00:00:00Z"), request.startDate)
+    }
+
+    @Test
+    fun `MessageListRequest setEndDateFromLocalDateTime works`() {
+        // Given
+        val request = MessageListRequest()
+        val localDateTime = java.time.LocalDateTime.of(2024, 12, 31, 23, 59, 59)
+        
+        // When
+        request.setEndDateFromLocalDateTime(localDateTime, java.time.ZoneOffset.UTC)
+        
+        // Then
+        assertEquals(Instant.parse("2024-12-31T23:59:59Z"), request.endDate)
+    }
+
+    @Test
+    fun `MessageListBaseRequest setStartDateFromLocalDateTime works`() {
+        // Given
+        val request = MessageListBaseRequest()
+        val localDateTime = java.time.LocalDateTime.of(2024, 2, 1, 0, 0, 0)
+        
+        // When
+        request.setStartDateFromLocalDateTime(localDateTime, java.time.ZoneOffset.UTC)
+        
+        // Then
+        assertEquals(Instant.parse("2024-02-01T00:00:00Z"), request.startDate)
+    }
+
+    @Test
+    fun `MessageListBaseRequest setEndDateFromLocalDateTime works`() {
+        // Given
+        val request = MessageListBaseRequest()
+        val localDateTime = java.time.LocalDateTime.of(2024, 2, 28, 23, 59, 59)
+        
+        // When
+        request.setEndDateFromLocalDateTime(localDateTime, java.time.ZoneOffset.UTC)
+        
+        // Then
+        assertEquals(Instant.parse("2024-02-28T23:59:59Z"), request.endDate)
+    }
+
+    @Test
+    fun `MultipleDetailMessageSendingRequest setScheduledDateFromLocalDateTime works`() {
+        // Given
+        val request = MultipleDetailMessageSendingRequest(messages = emptyList())
+        val localDateTime = java.time.LocalDateTime.of(2024, 3, 15, 9, 0, 0)
+        
+        // When
+        request.setScheduledDateFromLocalDateTime(localDateTime, java.time.ZoneOffset.UTC)
+        
+        // Then
+        assertEquals(Instant.parse("2024-03-15T09:00:00Z"), request.scheduledDate)
+    }
 }

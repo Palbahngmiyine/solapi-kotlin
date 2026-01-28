@@ -1,7 +1,10 @@
 package com.solapi.sdk.message.dto.request
 
+import com.solapi.sdk.message.lib.toKotlinInstant
 import com.solapi.sdk.message.model.CommonMessageProperty
 import com.solapi.sdk.message.model.MessageStatusType
+import java.time.LocalDateTime
+import java.time.ZoneId
 import kotlin.time.Instant
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
@@ -70,4 +73,20 @@ data class MessageListRequest(
      * 발송 상태
      */
     var status: MessageStatusType? = null
-) : CommonMessageProperty
+) : CommonMessageProperty {
+    @JvmOverloads
+    fun setStartDateFromLocalDateTime(
+        localDateTime: LocalDateTime,
+        zoneId: ZoneId = ZoneId.systemDefault()
+    ) {
+        this.startDate = localDateTime.toKotlinInstant(zoneId)
+    }
+
+    @JvmOverloads
+    fun setEndDateFromLocalDateTime(
+        localDateTime: LocalDateTime,
+        zoneId: ZoneId = ZoneId.systemDefault()
+    ) {
+        this.endDate = localDateTime.toKotlinInstant(zoneId)
+    }
+}
