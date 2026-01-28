@@ -34,6 +34,8 @@ signing.gpg
 *.gpg
 *.asc
 secret.key
+.env
+.env.local
 
 # Generated files
 /docs/
