@@ -128,12 +128,12 @@ tasks.named("sourcesJar") {
 tasks.shadowJar {
     mergeServiceFiles()
 
-    // 의존성 충돌을 피하기 위해 필요한 패키지만 relocate
     relocate("com.fasterxml", "com.solapi.shadow.com.fasterxml")
     relocate("okhttp3", "com.solapi.shadow.okhttp3")
     relocate("okio", "com.solapi.shadow.okio")
     relocate("retrofit2", "com.solapi.shadow.retrofit2")
     relocate("org.apache", "com.solapi.shadow.org.apache")
+    relocate("kotlinx.serialization", "com.solapi.shadow.kotlinx.serialization")
 
     archiveClassifier.set("")
 }
