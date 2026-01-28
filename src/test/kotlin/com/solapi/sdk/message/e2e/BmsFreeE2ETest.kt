@@ -54,7 +54,7 @@ class BmsFreeE2ETest {
     }
 
     /**
-     * 테스트 이미지 업로드
+     * 테스트 이미지 업로드 (일반 - KAKAO 타입, PREMIUM_VIDEO 썸네일용)
      * @param filename 리소스 파일명
      * @return 업로드된 이미지 ID
      */
@@ -69,12 +69,100 @@ class BmsFreeE2ETest {
     }
 
     /**
-     * BMS Free 메시지 생성
+     * BMS 타입 이미지 업로드 (IMAGE, COMMERCE용)
+     * @param filename 리소스 파일명
+     * @return 업로드된 이미지 ID
      */
-    private fun createBmsFreeMessage(kakaoOption: KakaoOption): Message = Message(
+    private fun uploadBmsImage(filename: String = "test-image.png"): String? {
+        val imageUrl = javaClass.classLoader.getResource("images/$filename")
+        if (imageUrl == null) {
+            println("테스트 이미지가 없어 건너뜁니다: images/$filename")
+            return null
+        }
+        val file = File(imageUrl.toURI())
+        return messageService?.uploadFile(file, StorageType.BMS)
+    }
+
+    /**
+     * BMS WIDE 타입 이미지 업로드 (WIDE용 - 2:1 비율)
+     * @param filename 리소스 파일명
+     * @return 업로드된 이미지 ID
+     */
+    private fun uploadBmsWideImage(filename: String = "test-image-2to1.png"): String? {
+        val imageUrl = javaClass.classLoader.getResource("images/$filename")
+        if (imageUrl == null) {
+            println("테스트 이미지가 없어 건너뜁니다: images/$filename")
+            return null
+        }
+        val file = File(imageUrl.toURI())
+        return messageService?.uploadFile(file, StorageType.BMS_WIDE)
+    }
+
+    /**
+     * BMS WIDE_ITEM_LIST 메인 이미지 업로드 (2:1 비율)
+     * @param filename 리소스 파일명
+     * @return 업로드된 이미지 ID
+     */
+    private fun uploadBmsWideMainItemImage(filename: String = "test-image-2to1.png"): String? {
+        val imageUrl = javaClass.classLoader.getResource("images/$filename")
+        if (imageUrl == null) {
+            println("테스트 이미지가 없어 건너뜁니다: images/$filename")
+            return null
+        }
+        val file = File(imageUrl.toURI())
+        return messageService?.uploadFile(file, StorageType.BMS_WIDE_MAIN_ITEM_LIST)
+    }
+
+    /**
+     * BMS WIDE_ITEM_LIST 서브 이미지 업로드 (1:1 비율)
+     * @param filename 리소스 파일명
+     * @return 업로드된 이미지 ID
+     */
+    private fun uploadBmsWideSubItemImage(filename: String = "test-image.png"): String? {
+        val imageUrl = javaClass.classLoader.getResource("images/$filename")
+        if (imageUrl == null) {
+            println("테스트 이미지가 없어 건너뜁니다: images/$filename")
+            return null
+        }
+        val file = File(imageUrl.toURI())
+        return messageService?.uploadFile(file, StorageType.BMS_WIDE_SUB_ITEM_LIST)
+    }
+
+    /**
+     * BMS CAROUSEL_FEED 이미지 업로드 (2:1 비율)
+     * @param filename 리소스 파일명
+     * @return 업로드된 이미지 ID
+     */
+    private fun uploadBmsCarouselFeedImage(filename: String = "test-image-2to1.png"): String? {
+        val imageUrl = javaClass.classLoader.getResource("images/$filename")
+        if (imageUrl == null) {
+            println("테스트 이미지가 없어 건너뜁니다: images/$filename")
+            return null
+        }
+        val file = File(imageUrl.toURI())
+        return messageService?.uploadFile(file, StorageType.BMS_CAROUSEL_FEED_LIST)
+    }
+
+    /**
+     * BMS CAROUSEL_COMMERCE 이미지 업로드 (2:1 비율)
+     * @param filename 리소스 파일명
+     * @return 업로드된 이미지 ID
+     */
+    private fun uploadBmsCarouselCommerceImage(filename: String = "test-image-2to1.png"): String? {
+        val imageUrl = javaClass.classLoader.getResource("images/$filename")
+        if (imageUrl == null) {
+            println("테스트 이미지가 없어 건너뜁니다: images/$filename")
+            return null
+        }
+        val file = File(imageUrl.toURI())
+        return messageService?.uploadFile(file, StorageType.BMS_CAROUSEL_COMMERCE_LIST)
+    }
+
+    private fun createBmsFreeMessage(kakaoOption: KakaoOption, text: String? = null): Message = Message(
         type = MessageType.BMS_FREE,
         from = senderNumber,
         to = testPhoneNumber,
+        text = text,
         kakaoOptions = kakaoOption
     )
 
@@ -124,8 +212,6 @@ class BmsFreeE2ETest {
 
         val bmsOption = BmsTestUtils.createTextBmsOptionFull(
             content = "BMS Free TEXT 전체 필드 테스트",
-            header = "TEXT 헤더",
-            additionalContent = "추가 내용입니다",
             buttons = buttons,
             coupon = coupon,
             adult = false
@@ -150,7 +236,7 @@ class BmsFreeE2ETest {
     fun `IMAGE 타입 - 최소 구조`() {
         if (!assumeEnvironmentConfigured()) return
 
-        val imageId = uploadTestImage()
+        val imageId = uploadBmsImage()
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -178,7 +264,7 @@ class BmsFreeE2ETest {
     fun `IMAGE 타입 - 전체 필드`() {
         if (!assumeEnvironmentConfigured()) return
 
-        val imageId = uploadTestImage()
+        val imageId = uploadBmsImage()
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -193,10 +279,7 @@ class BmsFreeE2ETest {
 
         val bmsOption = BmsTestUtils.createImageBmsOptionFull(
             imageId = imageId,
-            content = "BMS Free IMAGE 전체 필드 테스트",
-            header = "IMAGE 헤더",
             imageLink = "https://example.com/image",
-            additionalContent = "추가 내용",
             buttons = buttons,
             coupon = coupon,
             adult = false
@@ -207,7 +290,7 @@ class BmsFreeE2ETest {
             bms = bmsOption
         )
 
-        val message = createBmsFreeMessage(kakaoOption)
+        val message = createBmsFreeMessage(kakaoOption, text = "BMS Free IMAGE 전체 필드 테스트")
         val response = messageService!!.send(message)
 
         assertNotNull(response)
@@ -221,7 +304,7 @@ class BmsFreeE2ETest {
     fun `WIDE 타입 - 최소 구조`() {
         if (!assumeEnvironmentConfigured()) return
 
-        val imageId = uploadTestImage("test-image-2to1.png") ?: uploadTestImage()
+        val imageId = uploadBmsWideImage()
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -249,7 +332,7 @@ class BmsFreeE2ETest {
     fun `WIDE 타입 - 전체 필드`() {
         if (!assumeEnvironmentConfigured()) return
 
-        val imageId = uploadTestImage("test-image-2to1.png") ?: uploadTestImage()
+        val imageId = uploadBmsWideImage()
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -264,10 +347,7 @@ class BmsFreeE2ETest {
 
         val bmsOption = BmsTestUtils.createWideBmsOptionFull(
             imageId = imageId,
-            content = "BMS Free WIDE 전체 필드 테스트",
-            header = "WIDE 헤더",
             imageLink = "https://example.com/wide",
-            additionalContent = "와이드 추가 내용",
             buttons = buttons,
             coupon = coupon,
             adult = false
@@ -278,7 +358,7 @@ class BmsFreeE2ETest {
             bms = bmsOption
         )
 
-        val message = createBmsFreeMessage(kakaoOption)
+        val message = createBmsFreeMessage(kakaoOption, text = "BMS Free WIDE 전체 필드 테스트")
         val response = messageService!!.send(message)
 
         assertNotNull(response)
@@ -292,8 +372,8 @@ class BmsFreeE2ETest {
     fun `WIDE_ITEM_LIST 타입 - 최소 구조`() {
         if (!assumeEnvironmentConfigured()) return
 
-        val mainImageId = uploadTestImage("test-image-2to1.png") ?: uploadTestImage()
-        val subImageId = uploadTestImage("test-image-1to1.png") ?: uploadTestImage()
+        val mainImageId = uploadBmsWideMainItemImage()
+        val subImageId = uploadBmsWideSubItemImage()
         if (mainImageId == null || subImageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -304,9 +384,11 @@ class BmsFreeE2ETest {
             title = "메인 아이템"
         )
 
+        // WIDE_ITEM_LIST는 최소 3개의 서브 아이템이 필요합니다
         val subWideItemList = listOf(
             BmsTestUtils.createSubWideItem(subImageId, "서브 아이템 1"),
-            BmsTestUtils.createSubWideItem(subImageId, "서브 아이템 2")
+            BmsTestUtils.createSubWideItem(subImageId, "서브 아이템 2"),
+            BmsTestUtils.createSubWideItem(subImageId, "서브 아이템 3")
         )
 
         val bmsOption = BmsTestUtils.createWideItemListBmsOption(
@@ -331,8 +413,8 @@ class BmsFreeE2ETest {
     fun `WIDE_ITEM_LIST 타입 - 전체 필드`() {
         if (!assumeEnvironmentConfigured()) return
 
-        val mainImageId = uploadTestImage("test-image-2to1.png") ?: uploadTestImage()
-        val subImageId = uploadTestImage("test-image-1to1.png") ?: uploadTestImage()
+        val mainImageId = uploadBmsWideMainItemImage()
+        val subImageId = uploadBmsWideSubItemImage()
         if (mainImageId == null || subImageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -384,7 +466,7 @@ class BmsFreeE2ETest {
     fun `COMMERCE 타입 - 최소 구조`() {
         if (!assumeEnvironmentConfigured()) return
 
-        val imageId = uploadTestImage()
+        val imageId = uploadBmsImage("test-image-2to1.png")
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -422,7 +504,7 @@ class BmsFreeE2ETest {
     fun `COMMERCE 타입 - 전체 필드`() {
         if (!assumeEnvironmentConfigured()) return
 
-        val imageId = uploadTestImage()
+        val imageId = uploadBmsImage("test-image-2to1.png")
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -446,7 +528,6 @@ class BmsFreeE2ETest {
             imageId = imageId,
             commerce = commerce,
             buttons = buttons,
-            header = "COMMERCE 헤더",
             imageLink = "https://example.com/product",
             additionalContent = "무료배송 | 오늘 출발",
             coupon = coupon,
@@ -472,15 +553,19 @@ class BmsFreeE2ETest {
     fun `CAROUSEL_FEED 타입 - 최소 구조`() {
         if (!assumeEnvironmentConfigured()) return
 
-        val imageId = uploadTestImage()
+        val imageId = uploadBmsCarouselFeedImage()
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
         }
 
+        val itemButtons = listOf(
+            BmsTestUtils.createWebLinkButton("바로가기", "https://example.com")
+        )
+
         val carouselItems = listOf(
-            BmsTestUtils.createCarouselFeedItem(imageId, "아이템 1", "내용 1"),
-            BmsTestUtils.createCarouselFeedItem(imageId, "아이템 2", "내용 2")
+            BmsTestUtils.createCarouselFeedItem(imageId, "아이템 1", "내용 1", buttons = itemButtons),
+            BmsTestUtils.createCarouselFeedItem(imageId, "아이템 2", "내용 2", buttons = itemButtons)
         )
 
         val bmsOption = BmsTestUtils.createCarouselFeedBmsOption(
@@ -504,7 +589,7 @@ class BmsFreeE2ETest {
     fun `CAROUSEL_FEED 타입 - 전체 필드`() {
         if (!assumeEnvironmentConfigured()) return
 
-        val imageId = uploadTestImage()
+        val imageId = uploadBmsCarouselFeedImage()
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -569,20 +654,26 @@ class BmsFreeE2ETest {
     fun `CAROUSEL_COMMERCE 타입 - 최소 구조`() {
         if (!assumeEnvironmentConfigured()) return
 
-        val imageId = uploadTestImage()
+        val imageId = uploadBmsCarouselCommerceImage()
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
         }
 
+        val itemButtons = listOf(
+            BmsTestUtils.createWebLinkButton("구매하기", "https://example.com")
+        )
+
         val carouselItems = listOf(
             BmsTestUtils.createCarouselCommerceItem(
                 imageId = imageId,
-                commerce = BmsTestUtils.createCommerce("상품 1", 30000)
+                commerce = BmsTestUtils.createCommerce("상품 1", 30000),
+                buttons = itemButtons
             ),
             BmsTestUtils.createCarouselCommerceItem(
                 imageId = imageId,
-                commerce = BmsTestUtils.createCommerce("상품 2", 40000)
+                commerce = BmsTestUtils.createCommerce("상품 2", 40000),
+                buttons = itemButtons
             )
         )
 
@@ -607,7 +698,7 @@ class BmsFreeE2ETest {
     fun `CAROUSEL_COMMERCE 타입 - 전체 필드`() {
         if (!assumeEnvironmentConfigured()) return
 
-        val imageId = uploadTestImage()
+        val imageId = uploadBmsCarouselCommerceImage()
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -687,7 +778,7 @@ class BmsFreeE2ETest {
         }
 
         val video = BmsTestUtils.createVideo(
-            videoUrl = "https://tv.kakao.com/v/123456789",
+            videoUrl = "https://tv.kakao.com/v/460734285",
             imageId = imageId
         )
 
@@ -720,22 +811,21 @@ class BmsFreeE2ETest {
         }
 
         val video = BmsTestUtils.createVideo(
-            videoUrl = "https://tv.kakao.com/v/123456789",
+            videoUrl = "https://tv.kakao.com/v/460734285",
             imageId = imageId,
             imageLink = "https://example.com/video"
         )
 
         val buttons = listOf(
-            BmsTestUtils.createWebLinkButton("영상 보기", "https://tv.kakao.com/v/123456789"),
-            BmsTestUtils.createChannelAddButton("채널 추가")
+            BmsTestUtils.createWebLinkButton("영상 보기", "https://tv.kakao.com/v/460734285")
         )
 
         val bmsOption = BmsTestUtils.createPremiumVideoBmsOptionFull(
             video = video,
             content = "BMS Free PREMIUM_VIDEO 전체 필드 테스트",
             header = "PREMIUM_VIDEO 헤더",
-            additionalContent = "영상 설명",
             buttons = buttons,
+            coupon = BmsTestUtils.createPercentCoupon(10, "프리미엄 비디오 쿠폰"),
             adult = false
         )
 
@@ -782,10 +872,10 @@ class BmsFreeE2ETest {
     }
 
     @Test
-    fun `COMMERCE without buttons - 필수 필드 누락`() {
+    fun `COMMERCE without buttons - 버튼 없이 발송 허용`() {
         if (!assumeEnvironmentConfigured()) return
 
-        val imageId = uploadTestImage()
+        val imageId = uploadBmsImage("test-image-2to1.png")
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -796,7 +886,7 @@ class BmsFreeE2ETest {
         val bmsOption = BmsTestUtils.createCommerceBmsOption(
             imageId = imageId,
             commerce = commerce,
-            buttons = emptyList() // 버튼 없음
+            buttons = emptyList()
         )
 
         val kakaoOption = KakaoOption(
@@ -805,16 +895,11 @@ class BmsFreeE2ETest {
         )
 
         val message = createBmsFreeMessage(kakaoOption)
+        val response = messageService!!.send(message)
 
-        var errorOccurred = false
-        try {
-            messageService!!.send(message)
-        } catch (e: Exception) {
-            errorOccurred = true
-            printExceptionDetails(e)
-        }
-
-        assertTrue(errorOccurred, "버튼 없이 COMMERCE 타입 발송 시 에러가 발생해야 함")
+        assertNotNull(response)
+        assertNotNull(response.groupInfo?.groupId)
+        println("COMMERCE 버튼 없이 발송 - groupId: ${response.groupInfo?.groupId}")
     }
 
     @Test
@@ -859,16 +944,15 @@ class BmsFreeE2ETest {
     fun `Invalid coupon title format`() {
         if (!assumeEnvironmentConfigured()) return
 
-        // 잘못된 쿠폰 제목 형식 (허용되지 않는 형식)
         val invalidCoupon = BmsCoupon(
-            title = "잘못된 쿠폰 제목", // 허용되지 않는 형식
+            title = "잘못된 쿠폰 제목",
             description = "설명"
         )
 
-        val bmsOption = BmsTestUtils.createTextBmsOptionFull(
-            content = "잘못된 쿠폰 테스트",
-            header = "헤더",
-            additionalContent = "추가",
+        // TEXT 타입은 adult, content, buttons, coupon만 지원
+        val bmsOption = BmsTestUtils.createTextBmsOption(
+            content = "잘못된 쿠폰 테스트"
+        ).copy(
             buttons = listOf(BmsTestUtils.createWebLinkButton()),
             coupon = invalidCoupon
         )

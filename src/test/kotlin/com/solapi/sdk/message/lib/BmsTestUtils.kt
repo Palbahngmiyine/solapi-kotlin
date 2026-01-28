@@ -257,11 +257,10 @@ object BmsTestUtils {
 
     /**
      * TEXT 타입 BMS 옵션 생성 (전체 필드)
+     * TEXT 타입은 adult, content, buttons, coupon만 지원 (header, additionalContent 미지원)
      */
     fun createTextBmsOptionFull(
         content: String = "텍스트 메시지 내용",
-        header: String = "헤더",
-        additionalContent: String = "추가 내용",
         buttons: List<BmsButton>,
         coupon: BmsCoupon? = null,
         adult: Boolean = false,
@@ -270,9 +269,7 @@ object BmsTestUtils {
         targeting = targeting,
         chatBubbleType = BmsChatBubbleType.TEXT,
         adult = adult,
-        header = header,
         content = content,
-        additionalContent = additionalContent,
         buttons = buttons,
         coupon = coupon
     )
@@ -293,13 +290,11 @@ object BmsTestUtils {
 
     /**
      * IMAGE 타입 BMS 옵션 생성 (전체 필드)
+     * IMAGE 타입은 header, additionalContent 미지원 - Message.text로 content 전달
      */
     fun createImageBmsOptionFull(
         imageId: String,
-        content: String = "이미지 메시지 내용",
-        header: String = "헤더",
         imageLink: String = "https://example.com",
-        additionalContent: String = "추가 내용",
         buttons: List<BmsButton>,
         coupon: BmsCoupon? = null,
         adult: Boolean = false,
@@ -308,11 +303,8 @@ object BmsTestUtils {
         targeting = targeting,
         chatBubbleType = BmsChatBubbleType.IMAGE,
         adult = adult,
-        header = header,
         imageId = imageId,
         imageLink = imageLink,
-        content = content,
-        additionalContent = additionalContent,
         buttons = buttons,
         coupon = coupon
     )
@@ -336,10 +328,7 @@ object BmsTestUtils {
      */
     fun createWideBmsOptionFull(
         imageId: String,
-        content: String = "와이드 메시지 내용",
-        header: String = "헤더",
         imageLink: String = "https://example.com",
-        additionalContent: String = "추가 내용",
         buttons: List<BmsButton>,
         coupon: BmsCoupon? = null,
         adult: Boolean = false,
@@ -348,25 +337,25 @@ object BmsTestUtils {
         targeting = targeting,
         chatBubbleType = BmsChatBubbleType.WIDE,
         adult = adult,
-        header = header,
         imageId = imageId,
         imageLink = imageLink,
-        content = content,
-        additionalContent = additionalContent,
         buttons = buttons,
         coupon = coupon
     )
 
     /**
      * WIDE_ITEM_LIST 타입 BMS 옵션 생성 (최소)
+     * header는 WIDE_ITEM_LIST 타입의 필수 필드
      */
     fun createWideItemListBmsOption(
         mainWideItem: BmsMainWideItem,
         subWideItemList: List<BmsSubWideItem>,
+        header: String = "WIDE_ITEM_LIST",
         targeting: KakaoBmsTargeting = KakaoBmsTargeting.I
     ): KakaoBmsOption = KakaoBmsOption(
         targeting = targeting,
         chatBubbleType = BmsChatBubbleType.WIDE_ITEM_LIST,
+        header = header,
         mainWideItem = mainWideItem,
         subWideItemList = subWideItemList
     )
@@ -411,12 +400,12 @@ object BmsTestUtils {
 
     /**
      * COMMERCE 타입 BMS 옵션 생성 (전체 필드)
+     * COMMERCE 타입은 header 미지원, additionalContent 지원
      */
     fun createCommerceBmsOptionFull(
         imageId: String,
         commerce: BmsCommerce,
         buttons: List<BmsButton>,
-        header: String = "헤더",
         imageLink: String = "https://example.com",
         additionalContent: String = "추가 내용",
         coupon: BmsCoupon? = null,
@@ -426,7 +415,6 @@ object BmsTestUtils {
         targeting = targeting,
         chatBubbleType = BmsChatBubbleType.COMMERCE,
         adult = adult,
-        header = header,
         imageId = imageId,
         imageLink = imageLink,
         additionalContent = additionalContent,
@@ -523,13 +511,14 @@ object BmsTestUtils {
 
     /**
      * PREMIUM_VIDEO 타입 BMS 옵션 생성 (전체 필드)
+     * PREMIUM_VIDEO 타입은 adult, header, content, video, buttons, coupon만 지원 (additionalContent 미지원)
      */
     fun createPremiumVideoBmsOptionFull(
         video: BmsVideo,
         content: String = "비디오 메시지 내용",
         header: String = "헤더",
-        additionalContent: String = "추가 내용",
         buttons: List<BmsButton>,
+        coupon: BmsCoupon? = null,
         adult: Boolean = false,
         targeting: KakaoBmsTargeting = KakaoBmsTargeting.I
     ): KakaoBmsOption = KakaoBmsOption(
@@ -539,7 +528,7 @@ object BmsTestUtils {
         header = header,
         video = video,
         content = content,
-        additionalContent = additionalContent,
-        buttons = buttons
+        buttons = buttons,
+        coupon = coupon
     )
 }
