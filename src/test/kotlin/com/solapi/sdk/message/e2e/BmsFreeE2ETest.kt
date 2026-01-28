@@ -1,6 +1,7 @@
 package com.solapi.sdk.message.e2e
 
 import com.solapi.sdk.SolapiClient
+import com.solapi.sdk.message.exception.SolapiMessageNotReceivedException
 import com.solapi.sdk.message.lib.BmsTestUtils
 import com.solapi.sdk.message.model.Message
 import com.solapi.sdk.message.model.MessageType
@@ -19,17 +20,18 @@ import java.io.File
  * 환경변수 설정 필요:
  * - SOLAPI_API_KEY: SOLAPI API 키
  * - SOLAPI_API_SECRET: SOLAPI API 시크릿
- * - KAKAO_PF_ID: 카카오 비즈니스 채널 ID
- * - SENDER_NUMBER: 등록된 발신번호
- * - TEST_PHONE_NUMBER: 테스트 수신번호
+ * - SOLAPI_SENDER: 등록된 발신번호
+ * - SOLAPI_RECIPIENT: 테스트 수신번호
+ * - SOLAPI_KAKAO_PF_ID: 카카오 비즈니스 채널 ID
+ * - SOLAPI_KAKAO_TEMPLATE_ID: 카카오 알림톡 템플릿 ID (선택)
  */
 class BmsFreeE2ETest {
 
     private val apiKey: String? = System.getenv("SOLAPI_API_KEY")
     private val apiSecret: String? = System.getenv("SOLAPI_API_SECRET")
-    private val pfId: String? = System.getenv("KAKAO_PF_ID")
-    private val senderNumber: String = System.getenv("SENDER_NUMBER") ?: "01000000000"
-    private val testPhoneNumber: String = System.getenv("TEST_PHONE_NUMBER") ?: "01000000000"
+    private val pfId: String? = System.getenv("SOLAPI_KAKAO_PF_ID")
+    private val senderNumber: String = System.getenv("SOLAPI_SENDER") ?: "01000000000"
+    private val testPhoneNumber: String = System.getenv("SOLAPI_RECIPIENT") ?: "01000000000"
 
     private val messageService: DefaultMessageService? by lazy {
         if (apiKey != null && apiSecret != null) {
@@ -45,7 +47,7 @@ class BmsFreeE2ETest {
      */
     private fun assumeEnvironmentConfigured(): Boolean {
         if (apiKey.isNullOrBlank() || apiSecret.isNullOrBlank() || pfId.isNullOrBlank()) {
-            println("환경변수가 설정되지 않아 테스트를 건너뜁니다. (SOLAPI_API_KEY, SOLAPI_API_SECRET, KAKAO_PF_ID 필요)")
+            println("환경변수가 설정되지 않아 테스트를 건너뜁니다. (SOLAPI_API_KEY, SOLAPI_API_SECRET, SOLAPI_KAKAO_PF_ID 필요)")
             return false
         }
         return true
@@ -75,6 +77,16 @@ class BmsFreeE2ETest {
         to = testPhoneNumber,
         kakaoOptions = kakaoOption
     )
+
+    private fun printExceptionDetails(e: Exception) {
+        println("예상된 에러 발생: ${e.message}")
+        if (e is SolapiMessageNotReceivedException) {
+            println("  실패한 메시지 목록 (${e.failedMessageList.size}건):")
+            e.failedMessageList.forEachIndexed { index, failed ->
+                println("    [${index + 1}] to: ${failed.to}, statusCode: ${failed.statusCode}, statusMessage: ${failed.statusMessage}")
+            }
+        }
+    }
 
     // ==================== TEXT 타입 테스트 ====================
 
@@ -763,7 +775,7 @@ class BmsFreeE2ETest {
             messageService!!.send(message)
         } catch (e: Exception) {
             errorOccurred = true
-            println("예상된 에러 발생: ${e.message}")
+            printExceptionDetails(e)
         }
 
         assertTrue(errorOccurred, "이미지 ID 없이 IMAGE 타입 발송 시 에러가 발생해야 함")
@@ -799,7 +811,7 @@ class BmsFreeE2ETest {
             messageService!!.send(message)
         } catch (e: Exception) {
             errorOccurred = true
-            println("예상된 에러 발생: ${e.message}")
+            printExceptionDetails(e)
         }
 
         assertTrue(errorOccurred, "버튼 없이 COMMERCE 타입 발송 시 에러가 발생해야 함")
@@ -837,7 +849,7 @@ class BmsFreeE2ETest {
             messageService!!.send(message)
         } catch (e: Exception) {
             errorOccurred = true
-            println("예상된 에러 발생: ${e.message}")
+            printExceptionDetails(e)
         }
 
         assertTrue(errorOccurred, "잘못된 비디오 URL로 PREMIUM_VIDEO 타입 발송 시 에러가 발생해야 함")
@@ -873,7 +885,7 @@ class BmsFreeE2ETest {
             messageService!!.send(message)
         } catch (e: Exception) {
             errorOccurred = true
-            println("예상된 에러 발생: ${e.message}")
+            printExceptionDetails(e)
         }
 
         assertTrue(errorOccurred, "잘못된 쿠폰 제목 형식으로 발송 시 에러가 발생해야 함")
@@ -899,7 +911,7 @@ class BmsFreeE2ETest {
             messageService!!.send(message)
         } catch (e: Exception) {
             errorOccurred = true
-            println("예상된 에러 발생: ${e.message}")
+            printExceptionDetails(e)
         }
 
         assertTrue(errorOccurred, "빈 캐러셀로 CAROUSEL_FEED 타입 발송 시 에러가 발생해야 함")

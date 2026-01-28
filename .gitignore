@@ -41,5 +41,6 @@ secret.key
 /docs/
 manual/
 
-# OMO
+# OMO, OMC
 .sisyphus/
+.omc/
