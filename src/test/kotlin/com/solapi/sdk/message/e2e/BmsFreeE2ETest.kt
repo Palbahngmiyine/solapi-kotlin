@@ -1,18 +1,15 @@
 package com.solapi.sdk.message.e2e
 
-import com.solapi.sdk.SolapiClient
-import com.solapi.sdk.message.exception.SolapiMessageNotReceivedException
+import com.solapi.sdk.message.e2e.base.BaseE2ETest
 import com.solapi.sdk.message.lib.BmsTestUtils
 import com.solapi.sdk.message.model.Message
 import com.solapi.sdk.message.model.MessageType
 import com.solapi.sdk.message.model.StorageType
 import com.solapi.sdk.message.model.kakao.KakaoOption
 import com.solapi.sdk.message.model.kakao.bms.BmsCoupon
-import com.solapi.sdk.message.service.DefaultMessageService
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-import java.io.File
 
 /**
  * BMS Free 발송 E2E 테스트
@@ -25,138 +22,7 @@ import java.io.File
  * - SOLAPI_KAKAO_PF_ID: 카카오 비즈니스 채널 ID
  * - SOLAPI_KAKAO_TEMPLATE_ID: 카카오 알림톡 템플릿 ID (선택)
  */
-class BmsFreeE2ETest {
-
-    private val apiKey: String? = System.getenv("SOLAPI_API_KEY")
-    private val apiSecret: String? = System.getenv("SOLAPI_API_SECRET")
-    private val pfId: String? = System.getenv("SOLAPI_KAKAO_PF_ID")
-    private val senderNumber: String = System.getenv("SOLAPI_SENDER") ?: "01000000000"
-    private val testPhoneNumber: String = System.getenv("SOLAPI_RECIPIENT") ?: "01000000000"
-
-    private val messageService: DefaultMessageService? by lazy {
-        if (apiKey != null && apiSecret != null) {
-            SolapiClient.createInstance(apiKey, apiSecret)
-        } else {
-            null
-        }
-    }
-
-    /**
-     * 환경변수 설정 여부 확인
-     * @return 환경변수가 설정되었으면 true, 아니면 false
-     */
-    private fun assumeEnvironmentConfigured(): Boolean {
-        if (apiKey.isNullOrBlank() || apiSecret.isNullOrBlank() || pfId.isNullOrBlank()) {
-            println("환경변수가 설정되지 않아 테스트를 건너뜁니다. (SOLAPI_API_KEY, SOLAPI_API_SECRET, SOLAPI_KAKAO_PF_ID 필요)")
-            return false
-        }
-        return true
-    }
-
-    /**
-     * 테스트 이미지 업로드 (일반 - KAKAO 타입, PREMIUM_VIDEO 썸네일용)
-     * @param filename 리소스 파일명
-     * @return 업로드된 이미지 ID
-     */
-    private fun uploadTestImage(filename: String = "test-image.png"): String? {
-        val imageUrl = javaClass.classLoader.getResource("images/$filename")
-        if (imageUrl == null) {
-            println("테스트 이미지가 없어 건너뜁니다: images/$filename")
-            return null
-        }
-        val file = File(imageUrl.toURI())
-        return messageService?.uploadFile(file, StorageType.KAKAO)
-    }
-
-    /**
-     * BMS 타입 이미지 업로드 (IMAGE, COMMERCE용)
-     * @param filename 리소스 파일명
-     * @return 업로드된 이미지 ID
-     */
-    private fun uploadBmsImage(filename: String = "test-image.png"): String? {
-        val imageUrl = javaClass.classLoader.getResource("images/$filename")
-        if (imageUrl == null) {
-            println("테스트 이미지가 없어 건너뜁니다: images/$filename")
-            return null
-        }
-        val file = File(imageUrl.toURI())
-        return messageService?.uploadFile(file, StorageType.BMS)
-    }
-
-    /**
-     * BMS WIDE 타입 이미지 업로드 (WIDE용 - 2:1 비율)
-     * @param filename 리소스 파일명
-     * @return 업로드된 이미지 ID
-     */
-    private fun uploadBmsWideImage(filename: String = "test-image-2to1.png"): String? {
-        val imageUrl = javaClass.classLoader.getResource("images/$filename")
-        if (imageUrl == null) {
-            println("테스트 이미지가 없어 건너뜁니다: images/$filename")
-            return null
-        }
-        val file = File(imageUrl.toURI())
-        return messageService?.uploadFile(file, StorageType.BMS_WIDE)
-    }
-
-    /**
-     * BMS WIDE_ITEM_LIST 메인 이미지 업로드 (2:1 비율)
-     * @param filename 리소스 파일명
-     * @return 업로드된 이미지 ID
-     */
-    private fun uploadBmsWideMainItemImage(filename: String = "test-image-2to1.png"): String? {
-        val imageUrl = javaClass.classLoader.getResource("images/$filename")
-        if (imageUrl == null) {
-            println("테스트 이미지가 없어 건너뜁니다: images/$filename")
-            return null
-        }
-        val file = File(imageUrl.toURI())
-        return messageService?.uploadFile(file, StorageType.BMS_WIDE_MAIN_ITEM_LIST)
-    }
-
-    /**
-     * BMS WIDE_ITEM_LIST 서브 이미지 업로드 (1:1 비율)
-     * @param filename 리소스 파일명
-     * @return 업로드된 이미지 ID
-     */
-    private fun uploadBmsWideSubItemImage(filename: String = "test-image.png"): String? {
-        val imageUrl = javaClass.classLoader.getResource("images/$filename")
-        if (imageUrl == null) {
-            println("테스트 이미지가 없어 건너뜁니다: images/$filename")
-            return null
-        }
-        val file = File(imageUrl.toURI())
-        return messageService?.uploadFile(file, StorageType.BMS_WIDE_SUB_ITEM_LIST)
-    }
-
-    /**
-     * BMS CAROUSEL_FEED 이미지 업로드 (2:1 비율)
-     * @param filename 리소스 파일명
-     * @return 업로드된 이미지 ID
-     */
-    private fun uploadBmsCarouselFeedImage(filename: String = "test-image-2to1.png"): String? {
-        val imageUrl = javaClass.classLoader.getResource("images/$filename")
-        if (imageUrl == null) {
-            println("테스트 이미지가 없어 건너뜁니다: images/$filename")
-            return null
-        }
-        val file = File(imageUrl.toURI())
-        return messageService?.uploadFile(file, StorageType.BMS_CAROUSEL_FEED_LIST)
-    }
-
-    /**
-     * BMS CAROUSEL_COMMERCE 이미지 업로드 (2:1 비율)
-     * @param filename 리소스 파일명
-     * @return 업로드된 이미지 ID
-     */
-    private fun uploadBmsCarouselCommerceImage(filename: String = "test-image-2to1.png"): String? {
-        val imageUrl = javaClass.classLoader.getResource("images/$filename")
-        if (imageUrl == null) {
-            println("테스트 이미지가 없어 건너뜁니다: images/$filename")
-            return null
-        }
-        val file = File(imageUrl.toURI())
-        return messageService?.uploadFile(file, StorageType.BMS_CAROUSEL_COMMERCE_LIST)
-    }
+class BmsFreeE2ETest : BaseE2ETest() {
 
     private fun createBmsFreeMessage(kakaoOption: KakaoOption, text: String? = null): Message = Message(
         type = MessageType.BMS_FREE,
@@ -166,21 +32,11 @@ class BmsFreeE2ETest {
         kakaoOptions = kakaoOption
     )
 
-    private fun printExceptionDetails(e: Exception) {
-        println("예상된 에러 발생: ${e.message}")
-        if (e is SolapiMessageNotReceivedException) {
-            println("  실패한 메시지 목록 (${e.failedMessageList.size}건):")
-            e.failedMessageList.forEachIndexed { index, failed ->
-                println("    [${index + 1}] to: ${failed.to}, statusCode: ${failed.statusCode}, statusMessage: ${failed.statusMessage}")
-            }
-        }
-    }
-
     // ==================== TEXT 타입 테스트 ====================
 
     @Test
     fun `TEXT 타입 - 최소 구조`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeKakaoEnvironmentConfigured()) return
 
         val bmsOption = BmsTestUtils.createTextBmsOption(
             content = "BMS Free TEXT 최소 구조 테스트"
@@ -201,7 +57,7 @@ class BmsFreeE2ETest {
 
     @Test
     fun `TEXT 타입 - 전체 필드`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeKakaoEnvironmentConfigured()) return
 
         val buttons = listOf(
             BmsTestUtils.createWebLinkButton("바로가기", "https://example.com"),
@@ -234,9 +90,9 @@ class BmsFreeE2ETest {
 
     @Test
     fun `IMAGE 타입 - 최소 구조`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeKakaoEnvironmentConfigured()) return
 
-        val imageId = uploadBmsImage()
+        val imageId = uploadImage(StorageType.BMS, "test-image.png")
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -262,9 +118,9 @@ class BmsFreeE2ETest {
 
     @Test
     fun `IMAGE 타입 - 전체 필드`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeKakaoEnvironmentConfigured()) return
 
-        val imageId = uploadBmsImage()
+        val imageId = uploadImage(StorageType.BMS, "test-image.png")
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -302,9 +158,9 @@ class BmsFreeE2ETest {
 
     @Test
     fun `WIDE 타입 - 최소 구조`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeKakaoEnvironmentConfigured()) return
 
-        val imageId = uploadBmsWideImage()
+        val imageId = uploadImage(StorageType.BMS_WIDE, "test-image-2to1.png")
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -330,9 +186,9 @@ class BmsFreeE2ETest {
 
     @Test
     fun `WIDE 타입 - 전체 필드`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeKakaoEnvironmentConfigured()) return
 
-        val imageId = uploadBmsWideImage()
+        val imageId = uploadImage(StorageType.BMS_WIDE, "test-image-2to1.png")
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -370,10 +226,10 @@ class BmsFreeE2ETest {
 
     @Test
     fun `WIDE_ITEM_LIST 타입 - 최소 구조`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeKakaoEnvironmentConfigured()) return
 
-        val mainImageId = uploadBmsWideMainItemImage()
-        val subImageId = uploadBmsWideSubItemImage()
+        val mainImageId = uploadImage(StorageType.BMS_WIDE_MAIN_ITEM_LIST, "test-image-2to1.png")
+        val subImageId = uploadImage(StorageType.BMS_WIDE_SUB_ITEM_LIST, "test-image.png")
         if (mainImageId == null || subImageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -411,10 +267,10 @@ class BmsFreeE2ETest {
 
     @Test
     fun `WIDE_ITEM_LIST 타입 - 전체 필드`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeKakaoEnvironmentConfigured()) return
 
-        val mainImageId = uploadBmsWideMainItemImage()
-        val subImageId = uploadBmsWideSubItemImage()
+        val mainImageId = uploadImage(StorageType.BMS_WIDE_MAIN_ITEM_LIST, "test-image-2to1.png")
+        val subImageId = uploadImage(StorageType.BMS_WIDE_SUB_ITEM_LIST, "test-image.png")
         if (mainImageId == null || subImageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -464,9 +320,9 @@ class BmsFreeE2ETest {
 
     @Test
     fun `COMMERCE 타입 - 최소 구조`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeKakaoEnvironmentConfigured()) return
 
-        val imageId = uploadBmsImage("test-image-2to1.png")
+        val imageId = uploadImage(StorageType.BMS, "test-image-2to1.png")
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -502,9 +358,9 @@ class BmsFreeE2ETest {
 
     @Test
     fun `COMMERCE 타입 - 전체 필드`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeKakaoEnvironmentConfigured()) return
 
-        val imageId = uploadBmsImage("test-image-2to1.png")
+        val imageId = uploadImage(StorageType.BMS, "test-image-2to1.png")
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -551,9 +407,9 @@ class BmsFreeE2ETest {
 
     @Test
     fun `CAROUSEL_FEED 타입 - 최소 구조`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeKakaoEnvironmentConfigured()) return
 
-        val imageId = uploadBmsCarouselFeedImage()
+        val imageId = uploadImage(StorageType.BMS_CAROUSEL_FEED_LIST, "test-image-2to1.png")
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -587,9 +443,9 @@ class BmsFreeE2ETest {
 
     @Test
     fun `CAROUSEL_FEED 타입 - 전체 필드`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeKakaoEnvironmentConfigured()) return
 
-        val imageId = uploadBmsCarouselFeedImage()
+        val imageId = uploadImage(StorageType.BMS_CAROUSEL_FEED_LIST, "test-image-2to1.png")
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -652,9 +508,9 @@ class BmsFreeE2ETest {
 
     @Test
     fun `CAROUSEL_COMMERCE 타입 - 최소 구조`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeKakaoEnvironmentConfigured()) return
 
-        val imageId = uploadBmsCarouselCommerceImage()
+        val imageId = uploadImage(StorageType.BMS_CAROUSEL_COMMERCE_LIST, "test-image-2to1.png")
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -696,9 +552,9 @@ class BmsFreeE2ETest {
 
     @Test
     fun `CAROUSEL_COMMERCE 타입 - 전체 필드`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeKakaoEnvironmentConfigured()) return
 
-        val imageId = uploadBmsCarouselCommerceImage()
+        val imageId = uploadImage(StorageType.BMS_CAROUSEL_COMMERCE_LIST, "test-image-2to1.png")
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -769,9 +625,9 @@ class BmsFreeE2ETest {
 
     @Test
     fun `PREMIUM_VIDEO 타입 - 최소 구조`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeKakaoEnvironmentConfigured()) return
 
-        val imageId = uploadTestImage()
+        val imageId = uploadImage(StorageType.KAKAO, "test-image.png")
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -802,9 +658,9 @@ class BmsFreeE2ETest {
 
     @Test
     fun `PREMIUM_VIDEO 타입 - 전체 필드`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeKakaoEnvironmentConfigured()) return
 
-        val imageId = uploadTestImage()
+        val imageId = uploadImage(StorageType.KAKAO, "test-image.png")
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -846,7 +702,7 @@ class BmsFreeE2ETest {
 
     @Test
     fun `IMAGE without imageId - 필수 필드 누락`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeKakaoEnvironmentConfigured()) return
 
         val bmsOption = BmsTestUtils.createImageBmsOption(
             imageId = "", // 빈 이미지 ID
@@ -873,9 +729,9 @@ class BmsFreeE2ETest {
 
     @Test
     fun `COMMERCE without buttons - 버튼 없이 발송 허용`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeKakaoEnvironmentConfigured()) return
 
-        val imageId = uploadBmsImage("test-image-2to1.png")
+        val imageId = uploadImage(StorageType.BMS, "test-image-2to1.png")
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -904,9 +760,9 @@ class BmsFreeE2ETest {
 
     @Test
     fun `PREMIUM_VIDEO with invalid videoUrl`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeKakaoEnvironmentConfigured()) return
 
-        val imageId = uploadTestImage()
+        val imageId = uploadImage(StorageType.KAKAO, "test-image.png")
         if (imageId == null) {
             println("이미지 업로드 실패로 테스트 건너뜀")
             return
@@ -942,7 +798,7 @@ class BmsFreeE2ETest {
 
     @Test
     fun `Invalid coupon title format`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeKakaoEnvironmentConfigured()) return
 
         val invalidCoupon = BmsCoupon(
             title = "잘못된 쿠폰 제목",
@@ -977,7 +833,7 @@ class BmsFreeE2ETest {
 
     @Test
     fun `CAROUSEL_FEED without carousel`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeKakaoEnvironmentConfigured()) return
 
         val bmsOption = BmsTestUtils.createCarouselFeedBmsOption(
             carouselItems = emptyList() // 빈 캐러셀
