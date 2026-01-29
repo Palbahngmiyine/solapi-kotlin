@@ -2,7 +2,9 @@ package com.solapi.sdk.message.e2e.base
 
 import com.solapi.sdk.SolapiClient
 import com.solapi.sdk.message.exception.SolapiMessageNotReceivedException
+import com.solapi.sdk.message.model.StorageType
 import com.solapi.sdk.message.service.DefaultMessageService
+import java.io.File
 
 /**
  * E2E 테스트를 위한 공통 베이스 클래스
@@ -83,5 +85,21 @@ abstract class BaseE2ETest {
                 println("    [${index + 1}] to: ${failed.to}, statusCode: ${failed.statusCode}, statusMessage: ${failed.statusMessage}")
             }
         }
+    }
+
+    /**
+     * 이미지 파일 업로드
+     * @param storageType 스토리지 타입
+     * @param filename 리소스 파일명 (images/ 디렉토리 내)
+     * @return 업로드된 이미지 ID, 파일이 없으면 null
+     */
+    protected fun uploadImage(storageType: StorageType, filename: String): String? {
+        val imageUrl = javaClass.classLoader.getResource("images/$filename")
+        if (imageUrl == null) {
+            println("테스트 이미지가 없어 건너뜁니다: images/$filename")
+            return null
+        }
+        val file = File(imageUrl.toURI())
+        return messageService?.uploadFile(file, storageType)
     }
 }
