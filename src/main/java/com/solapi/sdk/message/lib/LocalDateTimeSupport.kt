@@ -1,22 +1,20 @@
 package com.solapi.sdk.message.lib
 
 import kotlin.time.Instant
+import kotlin.time.toKotlinInstant
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.ZonedDateTime
 
 /**
  * LocalDateTime을 kotlin.time.Instant로 변환하는 유틸리티.
- * 
+ *
  * LocalDateTime은 시간대 정보가 없으므로, 변환 시 시간대를 지정해야 합니다.
  * 기본값은 시스템 기본 시간대(ZoneId.systemDefault())입니다.
- * 
- * 나노초 정밀도를 유지하기 위해 ISO-8601 문자열 변환을 사용합니다.
  */
 object LocalDateTimeSupport {
     /**
      * LocalDateTime을 kotlin.time.Instant로 변환합니다.
-     * 
+     *
      * @param localDateTime 변환할 LocalDateTime
      * @param zoneId 적용할 시간대 (기본값: 시스템 기본 시간대)
      * @return 변환된 kotlin.time.Instant
@@ -24,10 +22,7 @@ object LocalDateTimeSupport {
     @JvmStatic
     @JvmOverloads
     fun toKotlinInstant(localDateTime: LocalDateTime, zoneId: ZoneId = ZoneId.systemDefault()): Instant {
-        val zonedDateTime: ZonedDateTime = localDateTime.atZone(zoneId)
-        val javaInstant: java.time.Instant = zonedDateTime.toInstant()
-        // Use ISO-8601 string conversion to preserve nanosecond precision
-        return Instant.parse(javaInstant.toString())
+        return localDateTime.atZone(zoneId).toInstant().toKotlinInstant()
     }
 }
 
