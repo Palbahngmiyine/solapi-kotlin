@@ -1,10 +1,8 @@
 package com.solapi.sdk.message.e2e
 
-import com.solapi.sdk.SolapiClient
 import com.solapi.sdk.message.dto.request.SendRequestConfig
-import com.solapi.sdk.message.exception.SolapiMessageNotReceivedException
+import com.solapi.sdk.message.e2e.base.BaseE2ETest
 import com.solapi.sdk.message.model.Message
-import com.solapi.sdk.message.service.DefaultMessageService
 import java.time.LocalDateTime
 import java.time.ZoneId
 import kotlin.test.Test
@@ -21,44 +19,13 @@ import kotlin.time.Instant
  * - SOLAPI_SENDER: 등록된 발신번호
  * - SOLAPI_RECIPIENT: 테스트 수신번호
  */
-class ScheduledMessageE2ETest {
-
-    private val apiKey: String? = System.getenv("SOLAPI_API_KEY")
-    private val apiSecret: String? = System.getenv("SOLAPI_API_SECRET")
-    private val senderNumber: String = System.getenv("SOLAPI_SENDER") ?: "01000000000"
-    private val testPhoneNumber: String = System.getenv("SOLAPI_RECIPIENT") ?: "01000000000"
-
-    private val messageService: DefaultMessageService? by lazy {
-        if (apiKey != null && apiSecret != null) {
-            SolapiClient.createInstance(apiKey, apiSecret)
-        } else {
-            null
-        }
-    }
-
-    private fun assumeEnvironmentConfigured(): Boolean {
-        if (apiKey.isNullOrBlank() || apiSecret.isNullOrBlank()) {
-            println("환경변수가 설정되지 않아 테스트를 건너뜁니다. (SOLAPI_API_KEY, SOLAPI_API_SECRET 필요)")
-            return false
-        }
-        return true
-    }
-
-    private fun printExceptionDetails(e: Exception) {
-        println("예상된 에러 발생: ${e.message}")
-        if (e is SolapiMessageNotReceivedException) {
-            println("  실패한 메시지 목록 (${e.failedMessageList.size}건):")
-            e.failedMessageList.forEachIndexed { index, failed ->
-                println("    [${index + 1}] to: ${failed.to}, statusCode: ${failed.statusCode}, statusMessage: ${failed.statusMessage}")
-            }
-        }
-    }
+class ScheduledMessageE2ETest : BaseE2ETest() {
 
     // ==================== LocalDateTime 예약 발송 테스트 ====================
 
     @Test
     fun `예약 발송 - LocalDateTime 시스템 기본 타임존 사용`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeBasicEnvironmentConfigured()) return
 
         // Given
         val message = Message(
@@ -86,7 +53,7 @@ class ScheduledMessageE2ETest {
 
     @Test
     fun `예약 발송 - LocalDateTime 명시적 타임존 사용 (Asia Seoul)`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeBasicEnvironmentConfigured()) return
 
         // Given
         val message = Message(
@@ -115,7 +82,7 @@ class ScheduledMessageE2ETest {
 
     @Test
     fun `예약 발송 - 기존 Instant API 하위호환성 확인`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeBasicEnvironmentConfigured()) return
 
         // Given
         val message = Message(
@@ -143,7 +110,7 @@ class ScheduledMessageE2ETest {
 
     @Test
     fun `예약 발송 - 다중 메시지 LocalDateTime 사용`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeBasicEnvironmentConfigured()) return
 
         // Given
         val messages = listOf(
@@ -181,7 +148,7 @@ class ScheduledMessageE2ETest {
 
     @Test
     fun `예약 발송 - 과거 시간 지정시 즉시 발송 처리`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeBasicEnvironmentConfigured()) return
 
         // Given
         val message = Message(
@@ -207,7 +174,7 @@ class ScheduledMessageE2ETest {
 
     @Test
     fun `예약 발송 - 6개월 이내 미래 시간은 성공`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeBasicEnvironmentConfigured()) return
 
         // Given
         val message = Message(
@@ -234,7 +201,7 @@ class ScheduledMessageE2ETest {
 
     @Test
     fun `예약 발송 - 6개월 초과 미래 시간 지정시 에러`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeBasicEnvironmentConfigured()) return
 
         // Given
         val message = Message(
@@ -265,7 +232,7 @@ class ScheduledMessageE2ETest {
 
     @Test
     fun `예약 발송 - 나노초 정밀도 유지 확인`() {
-        if (!assumeEnvironmentConfigured()) return
+        if (!assumeBasicEnvironmentConfigured()) return
 
         // Given
         val message = Message(
