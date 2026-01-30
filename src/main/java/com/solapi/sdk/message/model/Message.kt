@@ -10,7 +10,7 @@ import com.solapi.sdk.message.model.voice.VoiceOption
 @Serializable
 data class Message (
     /**
-     * 카카오 알림톡, 친구톡 발송을 위한 파라미터
+     * 카카오 알림톡 발송을 위한 파라미터
      */
     var kakaoOptions: KakaoOption? = null,
 

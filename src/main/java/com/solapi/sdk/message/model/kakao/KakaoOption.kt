@@ -39,7 +39,7 @@ data class KakaoOption(
     var adFlag: Boolean = false,
 
     /**
-     * 친구톡 버튼
+     * 카카오 버튼
      */
     var buttons: List<KakaoButton>? = null,
 

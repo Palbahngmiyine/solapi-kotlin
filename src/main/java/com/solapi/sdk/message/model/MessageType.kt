@@ -23,12 +23,16 @@ enum class MessageType {
 
     /**
      * 카카오 친구톡
+     * @deprecated 2025/12/31 부로 지원 종료됨
      */
+    @Deprecated("2025/12/31 부로 지원 종료됨", level = DeprecationLevel.WARNING)
     CTA,
 
     /**
      * 이미지가 포함된 카카오 친구톡(이미지 1장 업로드 가능)
+     * @deprecated 2025/12/31 부로 지원 종료됨
      */
+    @Deprecated("2025/12/31 부로 지원 종료됨", level = DeprecationLevel.WARNING)
     CTI,
 
     /**

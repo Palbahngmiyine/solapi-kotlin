@@ -35,8 +35,6 @@ public class MainExample {
         System.out.println();
         System.out.println("  Kakao:");
         System.out.println("    KakaoAlimtalk     - 알림톡 발송");
-        System.out.println("    KakaoFriendTalk   - 친구톡 발송");
-        System.out.println("    KakaoImageFriend  - 이미지 친구톡 발송");
         System.out.println("    KakaoBrandMessage - 브랜드 메시지 발송");
         System.out.println();
         System.out.println("Usage:");

@@ -16,7 +16,7 @@ import java.time.LocalDateTime
  * 다양한 필터 옵션:
  * - from: 발신번호
  * - to: 수신번호
- * - type: 메시지 타입 (SMS, LMS, MMS, ATA, CTA 등)
+ * - type: 메시지 타입 (SMS, LMS, MMS, ATA 등)
  * - status: 메시지 상태 (PENDING, SENDING, COMPLETE, FAILED)
  * - startDate/endDate: 날짜 범위
  */

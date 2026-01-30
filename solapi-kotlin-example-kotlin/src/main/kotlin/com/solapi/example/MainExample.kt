@@ -33,8 +33,6 @@ fun main() {
     println()
     println("  Kakao:")
     println("    KakaoAlimtalk     - 알림톡 발송")
-    println("    KakaoFriendTalk   - 친구톡 발송")
-    println("    KakaoImageFriend  - 이미지 친구톡 발송")
     println("    KakaoBrandMessage - 브랜드 메시지 발송")
     println()
     println("Usage:")

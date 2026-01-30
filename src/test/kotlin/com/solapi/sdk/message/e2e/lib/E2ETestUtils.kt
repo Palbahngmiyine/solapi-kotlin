@@ -105,52 +105,6 @@ object E2ETestUtils {
         )
     )
 
-    /**
-     * 친구톡 메시지 생성 (텍스트만)
-     */
-    fun createFriendTalkMessage(
-        from: String,
-        to: String,
-        text: String = "[SDK 테스트] 친구톡 메시지입니다.",
-        pfId: String,
-        buttons: List<KakaoButton>? = null,
-        adFlag: Boolean = false
-    ): Message = Message(
-        type = MessageType.CTA,
-        from = from,
-        to = to,
-        text = text,
-        kakaoOptions = KakaoOption(
-            pfId = pfId,
-            buttons = buttons,
-            adFlag = adFlag
-        )
-    )
-
-    /**
-     * 친구톡 이미지 메시지 생성
-     */
-    fun createFriendTalkImageMessage(
-        from: String,
-        to: String,
-        text: String = "[SDK 테스트] 친구톡 이미지 메시지입니다.",
-        pfId: String,
-        imageId: String,
-        buttons: List<KakaoButton>? = null,
-        adFlag: Boolean = false
-    ): Message = Message(
-        type = MessageType.CTI,
-        from = from,
-        to = to,
-        text = text,
-        kakaoOptions = KakaoOption(
-            pfId = pfId,
-            imageId = imageId,
-            buttons = buttons,
-            adFlag = adFlag
-        )
-    )
-
     // ==================== 음성 메시지 팩토리 ====================
 
     /**
