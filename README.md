@@ -35,26 +35,6 @@ dependencies {
 
 ## 빠른 시작
 
-### Kotlin
-
-```kotlin
-import com.solapi.sdk.SolapiClient
-import com.solapi.sdk.message.model.Message
-
-fun main() {
-    val messageService = SolapiClient.createInstance("API_KEY", "API_SECRET")
-
-    val message = Message(
-        from = "발신번호",
-        to = "수신번호",
-        text = "안녕하세요. SOLAPI SDK 테스트입니다."
-    )
-
-    val response = messageService.send(message)
-    println("Group ID: ${response.groupInfo?.groupId}")
-}
-```
-
 ### Java
 
 ```java
@@ -77,6 +57,26 @@ public class Main {
 }
 ```
 
+### Kotlin
+
+```kotlin
+import com.solapi.sdk.SolapiClient
+import com.solapi.sdk.message.model.Message
+
+fun main() {
+    val messageService = SolapiClient.createInstance("API_KEY", "API_SECRET")
+
+    val message = Message(
+        from = "발신번호",
+        to = "수신번호",
+        text = "안녕하세요. SOLAPI SDK 테스트입니다."
+    )
+
+    val response = messageService.send(message)
+    println("Group ID: ${response.groupInfo?.groupId}")
+}
+```
+
 ## 예제 실행
 
 ### 환경변수 설정
@@ -93,11 +93,11 @@ public class Main {
 ### 실행 명령어
 
 ```bash
-# Kotlin 예제 실행
-./gradlew :solapi-kotlin-example-kotlin:run -Pexample=SendSms
-
 # Java 예제 실행
 ./gradlew :solapi-kotlin-example-java:run -Pexample=SendSms
+
+# Kotlin 예제 실행
+./gradlew :solapi-kotlin-example-kotlin:run -Pexample=SendSms
 ```
 
 ### 예제 목록
@@ -132,34 +132,39 @@ public class Main {
 
 ### MMS 이미지 첨부 발송
 
-```kotlin
+```java
 // 이미지 업로드
-val imageId = messageService.uploadFile(imageFile, StorageType.MMS)
+String imageId = messageService.uploadFile(imageFile, StorageType.MMS, null);
 
-// MMS 발송
-val message = Message(
-    type = MessageType.MMS,
-    from = "발신번호",
-    to = "수신번호",
-    text = "MMS 메시지 내용",
-    subject = "MMS 제목",
-    imageId = imageId
-)
-messageService.send(message)
+// MMS 메시지 생성 및 발송
+Message message = new Message();
+message.setType(MessageType.MMS);
+message.setFrom("발신번호");
+message.setTo("수신번호");
+message.setText("MMS 메시지 내용");
+message.setSubject("MMS 제목");
+message.setImageId(imageId);
+messageService.send(message, null);
 ```
 
 **이미지 규격:** JPG/JPEG, 최대 200KB, 권장 해상도 1000x1000 이하
 
 ### 대량 메시지 발송
 
-```kotlin
-val messages = (1..100).map { i ->
-    Message(from = sender, to = "010XXXX000$i", text = "메시지 $i")
+```java
+List<Message> messages = new ArrayList<>();
+for (int i = 1; i <= 100; i++) {
+    Message msg = new Message();
+    msg.setFrom(sender);
+    msg.setTo("010XXXX000" + i);
+    msg.setText("메시지 " + i);
+    messages.add(msg);
 }
 
 // 중복 수신번호 허용 옵션
-val config = SendRequestConfig(allowDuplicates = true)
-messageService.send(messages, config)
+SendRequestConfig config = new SendRequestConfig();
+config.setAllowDuplicates(true);
+messageService.send(messages, config);
 ```
 
 - 한 번에 최대 **10,000건** 발송 가능
@@ -167,14 +172,13 @@ messageService.send(messages, config)
 
 ### 예약 발송
 
-```kotlin
-val config = SendRequestConfig().apply {
-    setScheduledDateFromLocalDateTime(
-        LocalDateTime.now().plusMinutes(10),
-        ZoneId.of("Asia/Seoul")
-    )
-}
-messageService.send(message, config)
+```java
+SendRequestConfig config = new SendRequestConfig();
+config.setScheduledDateFromLocalDateTime(
+    LocalDateTime.now().plusMinutes(10),
+    ZoneId.of("Asia/Seoul")
+);
+messageService.send(message, config);
 ```
 
 - 최소 **10분 후**부터 최대 **6개월 이내** 예약 가능
@@ -182,18 +186,22 @@ messageService.send(message, config)
 
 ### 카카오 알림톡
 
-```kotlin
-val message = Message(
-    type = MessageType.ATA,
-    from = "발신번호",
-    to = "수신번호",
-    kakaoOptions = KakaoOption(
-        pfId = "카카오채널ID",
-        templateId = "템플릿ID",
-        variables = mapOf("name" to "홍길동", "code" to "123456")
-    )
-)
-messageService.send(message)
+```java
+Map<String, String> variables = new HashMap<>();
+variables.put("name", "홍길동");
+variables.put("code", "123456");
+
+KakaoOption kakaoOption = new KakaoOption();
+kakaoOption.setPfId("카카오채널ID");
+kakaoOption.setTemplateId("템플릿ID");
+kakaoOption.setVariables(variables);
+
+Message message = new Message();
+message.setType(MessageType.ATA);
+message.setFrom("발신번호");
+message.setTo("수신번호");
+message.setKakaoOptions(kakaoOption);
+messageService.send(message, null);
 ```
 
 - 검수 승인된 템플릿만 사용 가능
@@ -230,17 +238,17 @@ messageService.send(message)
 
 ## 에러 처리
 
-```kotlin
+```java
 try {
-    messageService.send(message)
-} catch (e: SolapiBadRequestException) {
-    println("잘못된 요청: ${e.message}")
-} catch (e: SolapiInvalidApiKeyException) {
-    println("잘못된 API 키: ${e.message}")
-} catch (e: SolapiMessageNotReceivedException) {
-    println("발송 실패: ${e.message}")
-} catch (e: SolapiException) {
-    println("기타 오류: ${e.message}")
+    messageService.send(message, null);
+} catch (SolapiBadRequestException e) {
+    System.out.println("잘못된 요청: " + e.getMessage());
+} catch (SolapiInvalidApiKeyException e) {
+    System.out.println("잘못된 API 키: " + e.getMessage());
+} catch (SolapiMessageNotReceivedException e) {
+    System.out.println("발송 실패: " + e.getMessage());
+} catch (SolapiException e) {
+    System.out.println("기타 오류: " + e.getMessage());
 }
 ```
 
@@ -261,10 +269,9 @@ try {
 
 ## 관련 링크
 
-- [SOLAPI 공식 문서](https://docs.solapi.com/)
-- [API 키 발급](https://console.solapi.com/)
+- [SOLAPI 공식 문서](https://developers.solapi.com/)
+- [API 키 발급](https://console.solapi.com/credentials)
 - [발신번호 등록](https://console.solapi.com/senderids)
-- [GitHub Issues](https://github.com/solapi/solapi-kotlin/issues)
 - [API Reference (Dokka)](https://solapi.github.io/solapi-kotlin/)
 
 ## 라이선스
