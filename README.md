@@ -7,22 +7,25 @@ Kotlin과 Java에서 SOLAPI 메시지 발송 서비스를 사용할 수 있는 �
 
 ## AI와 함께 시작하기
 
-Claude Code, Cursor, Windsurf 등 AI 코딩 도구를 사용하신다면, 아래 프롬프트를 AI에게 붙여넣기하세요.
+Claude Code, Cursor, Windsurf 등 AI 코딩 도구에 아래 프롬프트를 붙여넣기하세요:
 
 ```text
-SOLAPI SDK(`com.solapi:sdk:1.1.0`)로 문자 메시지를 발송하는 기능을 구현해줘.
-참고 문서: https://developers.solapi.com/
+SOLAPI SDK로 문자 메시지 발송 기능을 구현해줘.
+가이드: https://raw.githubusercontent.com/solapi/solapi-kotlin/main/LLM_GUIDE.md
 ```
 
-### AI가 도와줄 수 있는 작업
+터미널에서 가이드 확인:
+```bash
+curl -s https://raw.githubusercontent.com/solapi/solapi-kotlin/main/LLM_GUIDE.md
+```
 
-| 요청 예시 | 설명 |
-|-----------|------|
-| "SMS 발송 코드 작성해줘" | 단문 문자 발송 |
-| "카카오 알림톡 발송 구현해줘" | 알림톡 템플릿 발송 |
-| "대량 문자 발송 기능 추가해줘" | 최대 10,000건 일괄 발송 |
-| "예약 발송 구현해줘" | 특정 시간에 발송 예약 |
-| "발송 결과 조회 코드 작성해줘" | 메시지 상태 확인 |
+| 상황 | 프롬프트 |
+|------|----------|
+| SMS/MMS 발송 | "SOLAPI SDK로 SMS 발송 코드 작성해줘" |
+| 카카오 알림톡 | "SOLAPI SDK로 카카오 알림톡 발송 구현해줘" |
+| 대량 발송 | "SOLAPI SDK로 대량 문자 발송 기능 추가해줘" |
+| 예약 발송 | "SOLAPI SDK로 예약 발송 구현해줘" |
+| 발송 조회 | "SOLAPI SDK로 발송 결과 조회 코드 작성해줘" |
 
 ## 설치
 
