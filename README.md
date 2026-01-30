@@ -81,14 +81,14 @@ fun main() {
 
 ### 환경변수 설정
 
-| 환경변수 | 설명 | 필수 |
-|----------|------|:----:|
-| `SOLAPI_API_KEY` | SOLAPI API 키 | O |
-| `SOLAPI_API_SECRET` | SOLAPI API 시크릿 | O |
-| `SOLAPI_SENDER` | 등록된 발신번호 | O |
-| `SOLAPI_RECIPIENT` | 수신번호 | O |
-| `SOLAPI_KAKAO_PF_ID` | 카카오 비즈니스 채널 ID | 카카오 발송 시 |
-| `SOLAPI_KAKAO_TEMPLATE_ID` | 카카오 알림톡 템플릿 ID | 알림톡 발송 시 |
+| 환경변수 | 설명 |       필수        |
+|----------|------|:---------------:|
+| `SOLAPI_API_KEY` | SOLAPI API 키 |        O        |
+| `SOLAPI_API_SECRET` | SOLAPI API 시크릿 |        O        |
+| `SOLAPI_SENDER` | 등록된 발신번호 |        O        |
+| `SOLAPI_RECIPIENT` | 수신번호 |        O        |
+| `SOLAPI_KAKAO_PF_ID` | 카카오 비즈니스 채널 ID | 카카오 계열 메시지 발송 시 |
+| `SOLAPI_KAKAO_TEMPLATE_ID` | 카카오 알림톡 템플릿 ID |    알림톡 발송 시     |
 
 ### 실행 명령어
 
