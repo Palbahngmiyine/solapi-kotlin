@@ -361,7 +361,7 @@ try {
 
 ## 관련 링크
 
-- [SOLAPI 공식 문서](https://developers.solapi.com/)
+- [SOLAPI 개발연동 문서](https://developers.solapi.com)
 - [API 키 발급](https://console.solapi.com/credentials)
 - [발신번호 등록](https://console.solapi.com/senderids)
 - [API Reference (Dokka)](https://solapi.github.io/solapi-kotlin/)
