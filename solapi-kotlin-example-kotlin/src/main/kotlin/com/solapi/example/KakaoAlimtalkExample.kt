@@ -20,6 +20,8 @@ import com.solapi.sdk.message.model.kakao.KakaoOption
  * - 사전에 검수 승인된 템플릿만 사용 가능
  * - 정보성 메시지 전용 (광고 불가)
  * - 변수 치환을 통해 동적 내용 전달 가능
+ * 번외:
+ * 브랜드 메시지 템플릿과 동일한 형태의 코드로 발송하실 수 있습니다!
  */
 fun main() {
     // 환경변수에서 설정 로드
@@ -47,7 +49,6 @@ fun main() {
 
     // 알림톡 메시지 생성
     val message = Message(
-        type = MessageType.ATA,
         from = sender,
         to = recipient,
         kakaoOptions = KakaoOption(
