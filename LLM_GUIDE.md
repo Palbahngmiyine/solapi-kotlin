@@ -1,4 +1,4 @@
-# SOLAPI Kotlin SDK - LLM Guide
+# SOLAPI Kotlin/Java SDK - LLM Guide
 
 SDK를 사용하여 코드를 작성하는 LLM 에이전트용 기술 가이드.
 
@@ -11,6 +11,14 @@ SDK를 사용하여 코드를 작성하는 LLM 에이전트용 기술 가이드.
 | API Ref | https://solapi.github.io/solapi-kotlin/ |
 | Java | 8+ |
 | Kotlin | 1.8+ |
+
+## JDK 8 Note
+
+JDK 8에서는 `Map.of()`, `List.of()` 사용 불가. HashMap, ArrayList 사용:
+```java
+Map<String, String> variables = new HashMap<>();
+variables.put("name", "홍길동");
+```
 
 ## Setup
 
@@ -75,11 +83,15 @@ KakaoOption(
 KakaoOption kakaoOption = new KakaoOption();
 kakaoOption.setPfId("카카오채널ID");
 kakaoOption.setTemplateId("템플릿ID");
-kakaoOption.setVariables(Map.of("name", "홍길동", "code", "123456"));
+Map<String, String> variables = new HashMap<>();
+variables.put("name", "홍길동");
+variables.put("code", "123456");
+kakaoOption.setVariables(variables);
 ```
 
 ## File Upload (MMS)
 
+**Kotlin:**
 ```kotlin
 val imageId = service.uploadFile(file, StorageType.MMS)
 val message = Message(
@@ -90,25 +102,57 @@ val message = Message(
     subject = "제목",
     imageId = imageId
 )
+service.send(message)
+```
+
+**Java:**
+```java
+String imageId = service.uploadFile(file, StorageType.MMS, null);
+Message message = new Message();
+message.setType(MessageType.MMS);
+message.setFrom("발신번호");
+message.setTo("수신번호");
+message.setText("MMS 내용");
+message.setSubject("제목");
+message.setImageId(imageId);
+service.send(message, null);
 ```
 
 ## Batch Send
 
+**Kotlin:**
 ```kotlin
 val messages = recipients.map { recipient ->
     Message(from = sender, to = recipient, text = "메시지")
 }
 service.send(messages)  // max 10,000
-```
 
-중복 번호 허용:
-```kotlin
+// 중복 번호 허용
 val config = SendRequestConfig().apply { allowDuplicates = true }
 service.send(messages, config)
 ```
 
+**Java:**
+```java
+List<Message> messages = new ArrayList<>();
+for (String recipient : recipients) {
+    Message msg = new Message();
+    msg.setFrom(sender);
+    msg.setTo(recipient);
+    msg.setText("메시지");
+    messages.add(msg);
+}
+service.send(messages, null);  // max 10,000
+
+// 중복 번호 허용
+SendRequestConfig config = new SendRequestConfig();
+config.setAllowDuplicates(true);
+service.send(messages, config);
+```
+
 ## Scheduled Send
 
+**Kotlin:**
 ```kotlin
 val config = SendRequestConfig().apply {
     setScheduledDateFromLocalDateTime(
@@ -117,6 +161,16 @@ val config = SendRequestConfig().apply {
     )
 }
 service.send(message, config)
+```
+
+**Java:**
+```java
+SendRequestConfig config = new SendRequestConfig();
+config.setScheduledDateFromLocalDateTime(
+    LocalDateTime.now().plusMinutes(10),
+    ZoneId.of("Asia/Seoul")
+);
+service.send(message, config);
 ```
 
 제약: 최소 10분 후 ~ 최대 6개월 이내
@@ -159,6 +213,7 @@ service.send(message, config)
 
 ## Error Handling Pattern
 
+**Kotlin:**
 ```kotlin
 try {
     service.send(message)
@@ -169,6 +224,21 @@ try {
 } catch (e: SolapiMessageNotReceivedException) {
     // 발송 실패
 } catch (e: SolapiException) {
+    // 기타 오류
+}
+```
+
+**Java:**
+```java
+try {
+    service.send(message, null);
+} catch (SolapiBadRequestException e) {
+    // 잘못된 요청
+} catch (SolapiInvalidApiKeyException e) {
+    // API 키 오류
+} catch (SolapiMessageNotReceivedException e) {
+    // 발송 실패
+} catch (SolapiException e) {
     // 기타 오류
 }
 ```
