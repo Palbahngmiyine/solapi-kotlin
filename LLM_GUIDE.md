@@ -1,11 +1,39 @@
 # SOLAPI Kotlin/Java SDK - LLM Guide
 
-SDK를 사용하여 코드를 작성하는 LLM 에이전트용 기술 가이드.
+Technical guide for LLM agents writing code using the SDK.
+
+## Agent Workflow
+
+LLM agents should use the AskUserQuestion tool to ask users about their messaging needs before writing code.
+
+### Required Questions
+
+Ask the user the following questions using AskUserQuestion:
+
+1. **Message Type** - Which type of message do you want to send?
+   - SMS/LMS (Text message)
+   - MMS (Image message)
+   - Kakao Alimtalk (Notification)
+   - Kakao Brand Message (Freeform/Template)
+   - RCS
+   - Voice
+   - FAX
+
+2. **Programming Language** - Which language are you using?
+   - Kotlin
+   - Java
+
+3. **Send Mode** - How do you want to send messages?
+   - Single message
+   - Batch send (multiple recipients)
+   - Scheduled send
+
+After gathering requirements, proceed to the relevant sections in this guide.
 
 ## Quick Reference
 
-| 항목 | 값 |
-|------|-----|
+| Item | Value |
+|------|-------|
 | SDK | `com.solapi:sdk:1.1.0` |
 | Docs | https://developers.solapi.com/llms.txt |
 | API Ref | https://solapi.github.io/solapi-kotlin/ |
@@ -14,7 +42,7 @@ SDK를 사용하여 코드를 작성하는 LLM 에이전트용 기술 가이드.
 
 ## JDK 8 Note
 
-JDK 8에서는 `Map.of()`, `List.of()` 사용 불가. HashMap, ArrayList 사용:
+JDK 8 does not support `Map.of()`, `List.of()`. Use HashMap, ArrayList instead:
 ```java
 Map<String, String> variables = new HashMap<>();
 variables.put("name", "홍길동");
@@ -61,13 +89,13 @@ service.send(message, null);
 |------|-------|-------|
 | SMS | text | < 80 bytes |
 | LMS | text | 80-2000 bytes |
-| MMS | imageId | uploadFile() 후 사용, JPG/JPEG, max 200KB |
-| ATA | kakaoOptions | 카카오 알림톡, 템플릿 필수 |
-| BMS_* | kakaoOptions | 카카오 브랜드 메시지 |
-| RCS_* | rcsOptions | RCS 문자 |
-| NSA | naverOptions | 네이버 스마트 알림 |
-| FAX | fileId | uploadFile() 후 사용 |
-| VOICE | voiceOptions | 음성 메시지 |
+| MMS | imageId | Use after uploadFile(), JPG/JPEG, max 200KB |
+| ATA | kakaoOptions | Kakao Alimtalk, template required |
+| BMS_* | kakaoOptions | Kakao Brand Message |
+| RCS_* | rcsOptions | RCS message |
+| NSA | naverOptions | Naver Smart Notification |
+| FAX | fileId | Use after uploadFile() |
+| VOICE | voiceOptions | Voice message |
 
 ## KakaoOption
 
@@ -173,43 +201,43 @@ config.setScheduledDateFromLocalDateTime(
 service.send(message, config);
 ```
 
-제약: 최소 10분 후 ~ 최대 6개월 이내
+Constraints: Minimum 10 minutes, maximum 6 months in advance
 
 ## API Methods
 
-**발송:**
+**Send:**
 | Method | Description |
 |--------|-------------|
-| `send(message)` | 단건 발송 |
-| `send(messages)` | 다건 발송 (max 10,000) |
-| `send(message, config)` | 설정과 함께 발송 |
-| `uploadFile(file, type)` | 파일 업로드 |
+| `send(message)` | Send single message |
+| `send(messages)` | Send multiple messages (max 10,000) |
+| `send(message, config)` | Send with configuration |
+| `uploadFile(file, type)` | Upload file |
 
-**조회:**
+**Query:**
 | Method | Description |
 |--------|-------------|
-| `getBalance()` | 잔액 조회 |
-| `getQuota()` | 일일 한도 조회 |
-| `getMessageList(request)` | 발송 내역 조회 |
+| `getBalance()` | Get balance |
+| `getQuota()` | Get daily quota |
+| `getMessageList(request)` | Get message history |
 
-**카카오 템플릿:**
+**Kakao Templates:**
 | Method | Description |
 |--------|-------------|
-| `getKakaoAlimtalkTemplates()` | 알림톡 템플릿 목록 |
-| `getKakaoAlimtalkTemplate(id)` | 템플릿 상세 |
-| `getSendableKakaoAlimtalkTemplates()` | 발송 가능 템플릿 |
+| `getKakaoAlimtalkTemplates()` | Get Alimtalk template list |
+| `getKakaoAlimtalkTemplate(id)` | Get template details |
+| `getSendableKakaoAlimtalkTemplates()` | Get sendable templates |
 
 ## Exceptions
 
 | Exception | Cause |
 |-----------|-------|
-| `SolapiBadRequestException` | 잘못된 파라미터 |
-| `SolapiInvalidApiKeyException` | API 키 오류 |
-| `SolapiApiKeyException` | API 키 관련 오류 |
-| `SolapiFileUploadException` | 파일 업로드 실패 |
-| `SolapiMessageNotReceivedException` | 발송 실패 |
-| `SolapiEmptyResponseException` | 빈 응답 |
-| `SolapiUnknownException` | 알 수 없는 오류 |
+| `SolapiBadRequestException` | Invalid parameters |
+| `SolapiInvalidApiKeyException` | API key error |
+| `SolapiApiKeyException` | API key related error |
+| `SolapiFileUploadException` | File upload failed |
+| `SolapiMessageNotReceivedException` | Send failed |
+| `SolapiEmptyResponseException` | Empty response |
+| `SolapiUnknownException` | Unknown error |
 
 ## Error Handling Pattern
 
@@ -247,11 +275,11 @@ try {
 
 | Variable | Description |
 |----------|-------------|
-| `SOLAPI_API_KEY` | API 키 |
-| `SOLAPI_API_SECRET` | API 시크릿 |
-| `SOLAPI_SENDER` | 발신번호 |
-| `SOLAPI_KAKAO_PF_ID` | 카카오 채널 ID |
-| `SOLAPI_KAKAO_TEMPLATE_ID` | 알림톡 템플릿 ID |
+| `SOLAPI_API_KEY` | API key |
+| `SOLAPI_API_SECRET` | API secret |
+| `SOLAPI_SENDER` | Sender number |
+| `SOLAPI_KAKAO_PF_ID` | Kakao channel ID |
+| `SOLAPI_KAKAO_TEMPLATE_ID` | Alimtalk template ID |
 
 ## Imports
 

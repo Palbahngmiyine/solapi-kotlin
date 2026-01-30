@@ -7,14 +7,17 @@ Kotlin과 Java에서 SOLAPI 메시지 발송 서비스를 사용할 수 있는 �
 
 ## AI와 함께 시작하기
 
+### 사람이 읽을 가이드:
 Claude Code, Cursor, Windsurf 등 AI 코딩 도구에 아래 프롬프트를 붙여넣기하세요:
 
 ```text
-SOLAPI SDK로 문자 메시지 발송 기능을 구현해줘.
-가이드: https://raw.githubusercontent.com/solapi/solapi-kotlin/main/LLM_GUIDE.md
+Implement messaging feature using SOLAPI SDK.
+Guide: https://raw.githubusercontent.com/solapi/solapi-kotlin/main/LLM_GUIDE.md
 ```
 
-터미널에서 가이드 확인:
+### LLM 에이전트를 위한 가이드:
+SDK 가이드를 가져온 후 LLM 가이드를 따르세요.
+
 ```bash
 curl -s https://raw.githubusercontent.com/solapi/solapi-kotlin/main/LLM_GUIDE.md
 ```
