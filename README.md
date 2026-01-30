@@ -9,8 +9,10 @@ Kotlin과 Java에서 SOLAPI 메시지 발송 서비스를 사용할 수 있는 �
 
 Claude Code, Cursor, Windsurf 등 AI 코딩 도구를 사용하신다면, 아래 프롬프트를 AI에게 붙여넣기하세요.
 
-> SOLAPI SDK(`com.solapi:sdk:1.1.0`)로 문자 메시지를 발송하는 기능을 구현해줘.
-> 참고 문서: https://developers.solapi.com/
+```text
+SOLAPI SDK(`com.solapi:sdk:1.1.0`)로 문자 메시지를 발송하는 기능을 구현해줘.
+참고 문서: https://developers.solapi.com/
+```
 
 ### AI가 도와줄 수 있는 작업
 
