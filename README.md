@@ -1,4 +1,4 @@
-# SOLAPI Kotlin SDK
+# SOLAPI Kotlin/Java SDK
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.solapi/sdk)](https://central.sonatype.com/artifact/com.solapi/sdk)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
