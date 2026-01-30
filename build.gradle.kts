@@ -114,6 +114,9 @@ val generateVersionFile by tasks.register("generateVersionFile") {
 
 tasks.withType<KotlinCompile>().configureEach {
     dependsOn(generateVersionFile)
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_1_8)
+    }
 }
 
 java {
@@ -146,16 +149,6 @@ tasks.withType<JavaCompile>().configureEach {
     javaCompiler.set(javaToolchains.compilerFor {
         languageVersion.set(JavaLanguageVersion.of(8))
     })
-}
-
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.compilerOptions {
-    jvmTarget.set(JvmTarget.JVM_1_8)
-}
-
-val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.compilerOptions {
-    jvmTarget.set(JvmTarget.JVM_1_8)
 }
 
 tasks.withType<DokkaGeneratePublicationTask>().configureEach {

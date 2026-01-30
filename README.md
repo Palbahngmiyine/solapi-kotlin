@@ -363,7 +363,7 @@ try {
 ## 요구 사항
 
 - **Java 8** 이상
-- **Kotlin 1.8** 이상 (Kotlin 사용 시)
+- **Kotlin 2.2.0** 이상 (Kotlin 사용 시)
 
 ## 관련 링크
 
