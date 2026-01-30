@@ -39,6 +39,7 @@ dependencies {
 
 ```java
 import com.solapi.sdk.SolapiClient;
+import com.solapi.sdk.message.dto.response.MultipleDetailMessageSentResponse;
 import com.solapi.sdk.message.model.Message;
 import com.solapi.sdk.message.service.DefaultMessageService;
 
@@ -51,7 +52,7 @@ public class Main {
         message.setTo("수신번호");
         message.setText("안녕하세요. SOLAPI SDK 테스트입니다.");
 
-        var response = messageService.send(message, null);
+        MultipleDetailMessageSentResponse response = messageService.send(message, null);
         System.out.println("Group ID: " + response.getGroupInfo().getGroupId());
     }
 }
@@ -100,6 +101,74 @@ fun main() {
 ./gradlew :solapi-kotlin-example-kotlin:run -Pexample=SendSms
 ```
 
+### JDK 8 사용자 안내
+
+**SDK 사용 시**: 본 SDK는 JDK 8 이상에서 정상 동작합니다. Maven Central에서 의존성을 추가하면 JDK 8 환경에서 바로 사용 가능합니다.
+
+**예제 실행 시**: 이 저장소의 예제를 직접 실행하려면 Gradle 9.x가 필요하며, 이는 **JDK 21 이상**을 요구합니다.
+
+JDK 8만 설치된 환경에서 예제를 실행하려면:
+
+#### 방법 1: 별도의 JDK 21+ 설치 (권장)
+
+Gradle Toolchain이 자동으로 JDK 8을 다운로드하여 예제를 컴파일합니다. Gradle 실행용으로만 JDK 21 이상이 필요합니다.
+
+```bash
+# macOS (Homebrew)
+brew install openjdk@21
+
+# Ubuntu/Debian
+sudo apt install openjdk-21-jdk
+
+# SDKMAN (권장)
+sdk install java 21.0.2-tem
+```
+
+#### 방법 2: 자신의 프로젝트에서 직접 테스트
+
+JDK 8 환경의 자체 프로젝트에서 SDK를 추가하고 테스트할 수 있습니다:
+
+```java
+// build.gradle (Groovy)
+plugins {
+    id 'java'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+dependencies {
+    implementation 'com.solapi:sdk:1.1.0'
+}
+```
+
+```java
+// src/main/java/MyTest.java
+import com.solapi.sdk.SolapiClient;
+import com.solapi.sdk.message.model.Message;
+import com.solapi.sdk.message.service.DefaultMessageService;
+
+public class MyTest {
+    public static void main(String[] args) {
+        DefaultMessageService messageService = SolapiClient.INSTANCE.createInstance(
+            "YOUR_API_KEY",
+            "YOUR_API_SECRET"
+        );
+
+        Message message = new Message();
+        message.setFrom("발신번호");
+        message.setTo("수신번호");
+        message.setText("테스트 메시지");
+
+        messageService.send(message, null);
+    }
+}
+```
+
+> **참고**: Gradle 7.x (JDK 11+) 또는 Gradle 6.x (JDK 8+)를 사용하는 프로젝트에서는 위 설정으로 바로 사용 가능합니다.
+
 ### 예제 목록
 
 | 예제 | 설명 |
@@ -132,6 +201,7 @@ fun main() {
 
 ### MMS 이미지 첨부 발송
 
+**Java:**
 ```java
 // 이미지 업로드
 String imageId = messageService.uploadFile(imageFile, StorageType.MMS, null);
@@ -151,6 +221,7 @@ messageService.send(message, null);
 
 ### 대량 메시지 발송
 
+**Java:**
 ```java
 List<Message> messages = new ArrayList<>();
 for (int i = 1; i <= 100; i++) {
@@ -172,6 +243,7 @@ messageService.send(messages, config);
 
 ### 예약 발송
 
+**Java:**
 ```java
 SendRequestConfig config = new SendRequestConfig();
 config.setScheduledDateFromLocalDateTime(
@@ -186,6 +258,7 @@ messageService.send(message, config);
 
 ### 카카오 알림톡
 
+**Java:**
 ```java
 Map<String, String> variables = new HashMap<>();
 variables.put("name", "홍길동");
