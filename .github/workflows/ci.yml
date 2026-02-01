@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# E2E 테스트에 필요한 환경변수 (선택사항 - 설정되지 않으면 E2E 테스트 건너뜀)
+#
+# 기본 환경변수:
+#   SOLAPI_API_KEY      - Solapi API 키
+#   SOLAPI_API_SECRET   - Solapi API 시크릿
+#   SOLAPI_SENDER       - 등록된 발신번호
+#   SOLAPI_RECIPIENT    - 테스트 수신번호
+#
+# 카카오 테스트 환경변수 (선택):
+#   SOLAPI_KAKAO_PF_ID      - 카카오 비즈니스 채널 ID
+#   SOLAPI_KAKAO_TEMPLATE_ID - 카카오 알림톡 템플릿 ID
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: ['8', '21']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ matrix.java-version }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: temurin
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build
+        run: ./gradlew build -x test
+
+      - name: Test
+        run: ./gradlew test
+        env:
+          SOLAPI_API_KEY: ${{ secrets.SOLAPI_API_KEY }}
+          SOLAPI_API_SECRET: ${{ secrets.SOLAPI_API_SECRET }}
+          SOLAPI_SENDER: ${{ secrets.SOLAPI_SENDER }}
+          SOLAPI_RECIPIENT: ${{ secrets.SOLAPI_RECIPIENT }}
+          SOLAPI_KAKAO_PF_ID: ${{ secrets.SOLAPI_KAKAO_PF_ID }}
+          SOLAPI_KAKAO_TEMPLATE_ID: ${{ secrets.SOLAPI_KAKAO_TEMPLATE_ID }}
