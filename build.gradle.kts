@@ -1,26 +1,31 @@
 import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
-import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.dokka.gradle.tasks.DokkaGeneratePublicationTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "2.2.10"
-    kotlin("plugin.serialization") version "2.2.10"
-    id("org.jetbrains.dokka") version "2.0.0"
-    id("com.gradleup.shadow") version "8.3.8"
+    kotlin("jvm") version "2.3.0"
+    kotlin("plugin.serialization") version "2.3.0"
+    id("org.jetbrains.dokka") version "2.1.0"
+    id("com.gradleup.shadow") version "9.3.1"
     java
     `java-library`
     `maven-publish`
     signing
-    id("com.vanniktech.maven.publish") version "0.34.0"
+    id("com.vanniktech.maven.publish") version "0.36.0"
 }
 
 group = "com.solapi"
-version = "1.0.3"
+version = "1.1.0"
 
 repositories {
     mavenCentral()
+}
+
+dokka {
+    dokkaPublications.html {
+        suppressInheritedMembers.set(true)
+    }
 }
 
 mavenPublishing {
@@ -77,17 +82,16 @@ mavenPublishing {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
-    implementation("commons-codec:commons-codec:1.18.0")
-    implementation("com.squareup.okhttp3:okhttp:5.1.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:5.1.0")
+    implementation("commons-codec:commons-codec:1.20.0")
+    implementation("com.squareup.okhttp3:okhttp:5.3.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:5.3.0")
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
     implementation("com.squareup.retrofit2:converter-kotlinx-serialization:3.0.0")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
+    testImplementation(kotlin("test"))
 
-    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:2.0.0")
+    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:2.1.0")
 }
 
 val generatedSrcDir = layout.buildDirectory.dir("generated/source/kotlin")
@@ -110,6 +114,9 @@ val generateVersionFile by tasks.register("generateVersionFile") {
 
 tasks.withType<KotlinCompile>().configureEach {
     dependsOn(generateVersionFile)
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_1_8)
+    }
 }
 
 java {
@@ -124,12 +131,12 @@ tasks.named("sourcesJar") {
 tasks.shadowJar {
     mergeServiceFiles()
 
-    // 의존성 충돌을 피하기 위해 필요한 패키지만 relocate
     relocate("com.fasterxml", "com.solapi.shadow.com.fasterxml")
     relocate("okhttp3", "com.solapi.shadow.okhttp3")
     relocate("okio", "com.solapi.shadow.okio")
     relocate("retrofit2", "com.solapi.shadow.retrofit2")
     relocate("org.apache", "com.solapi.shadow.org.apache")
+    relocate("kotlinx.serialization", "com.solapi.shadow.kotlinx.serialization")
 
     archiveClassifier.set("")
 }
@@ -142,20 +149,6 @@ tasks.withType<JavaCompile>().configureEach {
     javaCompiler.set(javaToolchains.compilerFor {
         languageVersion.set(JavaLanguageVersion.of(8))
     })
-}
-
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.compilerOptions {
-    jvmTarget.set(JvmTarget.JVM_1_8)
-}
-
-val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.compilerOptions {
-    jvmTarget.set(JvmTarget.JVM_1_8)
-}
-
-tasks.withType<DokkaTaskPartial>().configureEach {
-    outputDirectory.set(project.rootDir.resolve("docs"))
 }
 
 tasks.withType<DokkaGeneratePublicationTask>().configureEach {

@@ -34,7 +34,13 @@ signing.gpg
 *.gpg
 *.asc
 secret.key
+.env
+.env.local
 
 # Generated files
 /docs/
 manual/
+
+# OMO, OMC
+.sisyphus/
+.omc/

@@ -1,9 +1,12 @@
 package com.solapi.sdk.message.dto.request
 
-import kotlinx.serialization.Contextual
-import java.time.LocalDateTime
-import kotlinx.serialization.Serializable
+import com.solapi.sdk.message.lib.toKotlinInstant
 import com.solapi.sdk.message.model.CommonMessageProperty
+import java.time.LocalDateTime
+import java.time.ZoneId
+import kotlin.time.Instant
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class MessageListBaseRequest(
@@ -20,8 +23,24 @@ data class MessageListBaseRequest(
     var value: String? = null,
 
     @Contextual
-    var startDate: LocalDateTime? = null,
+    var startDate: Instant? = null,
 
     @Contextual
-    var endDate: LocalDateTime? = null
-) : CommonMessageProperty
+    var endDate: Instant? = null
+) : CommonMessageProperty {
+    @JvmOverloads
+    fun setStartDateFromLocalDateTime(
+        localDateTime: LocalDateTime,
+        zoneId: ZoneId = ZoneId.systemDefault()
+    ) {
+        this.startDate = localDateTime.toKotlinInstant(zoneId)
+    }
+
+    @JvmOverloads
+    fun setEndDateFromLocalDateTime(
+        localDateTime: LocalDateTime,
+        zoneId: ZoneId = ZoneId.systemDefault()
+    ) {
+        this.endDate = localDateTime.toKotlinInstant(zoneId)
+    }
+}

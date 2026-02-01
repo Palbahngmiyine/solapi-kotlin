@@ -1,0 +1,60 @@
+name: Publish to Maven Central
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+# 배포에 필요한 Secrets:
+#   MAVEN_CENTRAL_USERNAME - Central Portal User Token username
+#   MAVEN_CENTRAL_TOKEN    - Central Portal User Token password
+#   GPG_SIGNING_KEY        - GPG 비밀 키 (armor 형식)
+#   GPG_SIGNING_PASSWORD   - GPG 키 비밀번호
+#
+# E2E 테스트에 필요한 환경변수 (선택사항 - 설정되지 않으면 E2E 테스트 건너뜀)
+#
+# 기본 환경변수:
+#   SOLAPI_API_KEY      - Solapi API 키
+#   SOLAPI_API_SECRET   - Solapi API 시크릿
+#   SOLAPI_SENDER       - 등록된 발신번호
+#   SOLAPI_RECIPIENT    - 테스트 수신번호
+#
+# 카카오 테스트 환경변수 (선택):
+#   SOLAPI_KAKAO_PF_ID      - 카카오 비즈니스 채널 ID
+#   SOLAPI_KAKAO_TEMPLATE_ID - 카카오 알림톡 템플릿 ID
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run tests
+        run: ./gradlew test
+        env:
+          SOLAPI_API_KEY: ${{ secrets.SOLAPI_API_KEY }}
+          SOLAPI_API_SECRET: ${{ secrets.SOLAPI_API_SECRET }}
+          SOLAPI_SENDER: ${{ secrets.SOLAPI_SENDER }}
+          SOLAPI_RECIPIENT: ${{ secrets.SOLAPI_RECIPIENT }}
+          SOLAPI_KAKAO_PF_ID: ${{ secrets.SOLAPI_KAKAO_PF_ID }}
+          SOLAPI_KAKAO_TEMPLATE_ID: ${{ secrets.SOLAPI_KAKAO_TEMPLATE_ID }}
+
+      - name: Publish to Maven Central
+        run: ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_SIGNING_PASSWORD }}
